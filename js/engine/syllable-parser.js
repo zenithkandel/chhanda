@@ -1,6 +1,11 @@
 /**
  * Syllable Parser
  * Breaks Devanagari text into individual syllables for prosodic analysis
+ * 
+ * KEY RULE: A halant (्) closes the PRECEDING consonant, making it part of the
+ * same syllable. It does NOT start a new syllable.
+ * 
+ * Example: "दिन्" = द + इ + न् = ONE syllable (Guru), NOT two syllables.
  */
 
 const SyllableParser = (() => {
@@ -9,9 +14,12 @@ const SyllableParser = (() => {
   /**
    * Parses Devanagari text into syllables
    * @param {string} text - Devanagari text input
-   * @returns {Array<{text: string, index: number, start: number, end: number}>}
+   * @returns {Array<{text: string, index: number}>}
    * 
-   * Example: "मेरो नाम" → [{text:"मे"}, {text:"रो"}, {text:"ना"}, {text:"म"}]
+   * Examples:
+   * "दिन्" → [{text:"दिन्"}]  (ONE syllable, not two)
+   * "एक्" → [{text:"एक्"}]    (ONE syllable)
+   * "नारद" → [{text:"ना"}, {text:"र"}, {text:"द"}]
    */
   function parseSyllables(text) {
     if (!text || typeof text !== 'string') return [];
@@ -20,93 +28,181 @@ const SyllableParser = (() => {
     const syllables = [];
     let currentSyllable = '';
     let syllableIndex = 0;
-    let charPosition = 0;
 
     for (let i = 0; i < chars.length; i++) {
       const char = chars[i];
-      const code = D.codePoint(char);
 
-      // Skip spaces and punctuation - they are word/syllable boundaries
+      // Skip spaces and punctuation - they are word boundaries
       if (isSpace(char) || isPunctuation(char)) {
         if (currentSyllable) {
-          syllables.push({
-            text: currentSyllable,
-            index: syllableIndex,
-            start: charPosition,
-            end: charPosition + currentSyllable.length,
-          });
+          syllables.push({ text: currentSyllable, index: syllableIndex });
           syllableIndex++;
           currentSyllable = '';
-          charPosition = i + 1;
         }
         continue;
       }
 
-      // If we have a current syllable and encounter a new vowel (independent form)
-      // that's a syllable boundary
-      if (currentSyllable && D.isVowel(char)) {
-        // Check if previous syllable ended properly
-        syllables.push({
-          text: currentSyllable,
-          index: syllableIndex,
-          start: charPosition,
-          end: charPosition + currentSyllable.length,
-        });
-        syllableIndex++;
+      // Independent vowel (अ, आ, इ, ई, etc.)
+      // Always starts a new syllable
+      if (D.isVowel(char)) {
+        if (currentSyllable) {
+          syllables.push({ text: currentSyllable, index: syllableIndex });
+          syllableIndex++;
+        }
         currentSyllable = char;
-        charPosition = i;
         continue;
       }
 
-      // If we have a current syllable and encounter a new consonant
-      if (currentSyllable && D.isConsonant(char)) {
-        // Check if previous character was a halant
-        // If so, this consonant starts a new syllable (it has inherent vowel)
-        const prevChar = currentSyllable[currentSyllable.length - 1];
-        if (D.isHalant(prevChar)) {
-          syllables.push({
-            text: currentSyllable,
-            index: syllableIndex,
-            start: charPosition,
-            end: charPosition + currentSyllable.length,
-          });
-          syllableIndex++;
-          currentSyllable = char;
-          charPosition = i;
+      // Consonant (क, ख, ग, etc.)
+      if (D.isConsonant(char)) {
+        // Check if this consonant is followed by halant (making it a closing consonant)
+        if (i + 1 < chars.length && D.isHalant(chars[i + 1])) {
+          // Consonant + halant = closing consonant (coda)
+          // This attaches to the CURRENT syllable
+          currentSyllable += char + chars[i + 1];
+          i++; // Skip the halant
           continue;
         }
-        // Otherwise, this consonant might be part of a conjunct or just the next syllable
-        // We need to check if this is the start of a new syllable
-        // Simple heuristic: if we have a vowel/consonant+vowel, and this is a fresh consonant
-        if (currentSyllable.length > 0 && hasCompleteVowel(currentSyllable)) {
-          syllables.push({
-            text: currentSyllable,
-            index: syllableIndex,
-            start: charPosition,
-            end: charPosition + currentSyllable.length,
-          });
+
+        // Check if current syllable already has a vowel
+        // If yes, this consonant starts a NEW syllable
+        if (currentSyllable && hasVowelSound(currentSyllable)) {
+          syllables.push({ text: currentSyllable, index: syllableIndex });
           syllableIndex++;
           currentSyllable = char;
-          charPosition = i;
           continue;
         }
+
+        // Current syllable doesn't have a vowel yet (we're in the onset)
+        // Or current syllable is empty - just add this consonant
+        currentSyllable += char;
+        continue;
       }
 
-      // Default: add character to current syllable
+      // Matra (vowel sign: ा, ि, ू, े, ै, ो, ौ, etc.)
+      // Belongs to current syllable
+      if (D.isMatra(char)) {
+        currentSyllable += char;
+        continue;
+      }
+
+      // Anusvāra (ं) - belongs to current syllable
+      if (D.isAnusvara(char)) {
+        currentSyllable += char;
+        continue;
+      }
+
+      // Visarga (ः) - belongs to current syllable
+      if (D.isVisarga(char)) {
+        currentSyllable += char;
+        continue;
+      }
+
+      // Nukta (़) - belongs to current syllable
+      if (D.isNukta(char)) {
+        currentSyllable += char;
+        continue;
+      }
+
+      // Halant (्) that wasn't consumed by a consonant
+      // This shouldn't happen in well-formed text, but handle it
+      if (D.isHalant(char)) {
+        currentSyllable += char;
+        continue;
+      }
+
+      // Any other character - add to current syllable
       currentSyllable += char;
     }
 
     // Don't forget the last syllable
     if (currentSyllable) {
-      syllables.push({
-        text: currentSyllable,
-        index: syllableIndex,
-        start: charPosition,
-        end: charPosition + currentSyllable.length,
-      });
+      syllables.push({ text: currentSyllable, index: syllableIndex });
     }
 
     return syllables;
+  }
+
+  /**
+   * Checks if a syllable has a vowel sound
+   * This is used to determine syllable boundaries
+   * 
+   * A syllable has a vowel sound if it contains:
+   * - An independent vowel (अ, आ, इ, etc.)
+   * - A matra (ा, ि, ू, े, ै, ो, ौ)
+   * - A consonant with inherent vowel (consonant without halant or matra)
+   */
+  function hasVowelSound(syllable) {
+    if (!syllable) return false;
+
+    const chars = D.toCharArray(syllable);
+    let hasExplicitVowel = false;
+    let lastConsonantHasInherentVowel = false;
+
+    for (let i = 0; i < chars.length; i++) {
+      const char = chars[i];
+
+      // Independent vowel
+      if (D.isVowel(char)) {
+        return true;
+      }
+
+      // Matra (but not halant)
+      if (D.isMatra(char) && !D.isHalant(char)) {
+        return true;
+      }
+    }
+
+    // Check for consonant with inherent vowel
+    // A consonant has inherent vowel if:
+    // - It's a consonant
+    // - It's NOT followed by halant
+    // - It's NOT followed by a matra
+    for (let i = 0; i < chars.length; i++) {
+      const char = chars[i];
+
+      if (D.isConsonant(char)) {
+        // Check what follows this consonant
+        let hasFollowingHalant = false;
+        let hasFollowingMatra = false;
+
+        // Look ahead for halant or matra
+        for (let j = i + 1; j < chars.length; j++) {
+          const next = chars[j];
+          if (D.isHalant(next)) {
+            hasFollowingHalant = true;
+            break;
+          }
+          if (D.isMatra(next)) {
+            hasFollowingMatra = true;
+            break;
+          }
+          if (D.isConsonant(next)) {
+            // Another consonant - check if it's part of a conjunct
+            // If the next consonant is followed by halant, it's a half consonant
+            // and the current consonant has inherent vowel
+            break;
+          }
+          break;
+        }
+
+        // If this consonant is NOT followed by halant or matra,
+        // it has inherent vowel (unless it's a half consonant)
+        if (!hasFollowingHalant && !hasFollowingMatra) {
+          // Check if this consonant itself is a half consonant (preceded by halant)
+          let isHalfConsonant = false;
+          if (i > 0 && D.isHalant(chars[i - 1])) {
+            isHalfConsonant = true;
+          }
+
+          if (!isHalfConsonant) {
+            return true; // Has inherent vowel
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -165,39 +261,6 @@ const SyllableParser = (() => {
   }
 
   /**
-   * Checks if a syllable string has a complete vowel (open syllable)
-   * Used to determine syllable boundaries
-   * @param {string} syllable
-   * @returns {boolean}
-   */
-  function hasCompleteVowel(syllable) {
-    if (!syllable) return false;
-
-    const chars = D.toCharArray(syllable);
-
-    for (const char of chars) {
-      // Independent vowel = complete vowel
-      if (D.isVowel(char)) return true;
-
-      // Matra = complete vowel
-      if (D.isMatra(char) && !D.isHalant(char)) return true;
-    }
-
-    // Consonant with inherent vowel (no halant, no matra after it)
-    // Check if last char is consonant without halant
-    if (chars.length > 0) {
-      const lastChar = chars[chars.length - 1];
-      if (D.isConsonant(lastChar)) {
-        // Check if there's a halant anywhere
-        const hasHalant = chars.some(c => D.isHalant(c));
-        if (!hasHalant) return true; // Inherent vowel
-      }
-    }
-
-    return false;
-  }
-
-  /**
    * Gets detailed syllable information
    * @param {string} syllable - Single syllable text
    * @returns {Object} Detailed syllable analysis
@@ -208,18 +271,16 @@ const SyllableParser = (() => {
       text: syllable,
       characters: chars,
       hasVowel: false,
-      vowelType: null,      // 'independent', 'matra', 'inherent', or null
+      vowelType: null,
       vowelIsLong: false,
       hasHalant: false,
       hasAnusvara: false,
       hasVisarga: false,
       hasConjunct: false,
       hasNukta: false,
-      isClosed: false,       // Ends with consonant closure
+      isClosed: false,
       consonantCount: 0,
     };
-
-    let lastWasConsonant = false;
 
     for (let i = 0; i < chars.length; i++) {
       const char = chars[i];
@@ -229,54 +290,64 @@ const SyllableParser = (() => {
         analysis.vowelType = 'independent';
         const info = D.getVowelInfo(char);
         if (info) analysis.vowelIsLong = info.long;
-        lastWasConsonant = false;
       }
       else if (D.isMatra(char)) {
         if (D.isHalant(char)) {
           analysis.hasHalant = true;
-          lastWasConsonant = false;
         } else {
           analysis.hasVowel = true;
           analysis.vowelType = 'matra';
           const info = D.getMatraInfo(char);
           if (info) analysis.vowelIsLong = info.long;
-          lastWasConsonant = false;
         }
       }
       else if (D.isAnusvara(char)) {
         analysis.hasAnusvara = true;
-        lastWasConsonant = false;
       }
       else if (D.isVisarga(char)) {
         analysis.hasVisarga = true;
-        lastWasConsonant = false;
       }
       else if (D.isNukta(char)) {
         analysis.hasNukta = true;
-        lastWasConsonant = false;
       }
       else if (D.isConsonant(char)) {
         analysis.consonantCount++;
-        if (lastWasConsonant) {
-          analysis.hasConjunct = true;
+        // Check for conjunct (consecutive consonants)
+        if (i > 0) {
+          const prev = chars[i - 1];
+          if (D.isConsonant(prev) && !D.isHalant(prev)) {
+            analysis.hasConjunct = true;
+          }
         }
-        lastWasConsonant = true;
-      }
-      else {
-        lastWasConsonant = false;
       }
     }
 
-    // Check if syllable is closed (ends with halant or after halant)
+    // Check if syllable is closed (ends with halant)
     if (analysis.hasHalant) {
       analysis.isClosed = true;
     }
 
-    // Check for inherent vowel (consonant without halant or matra)
+    // Check for inherent vowel (consonant without explicit vowel)
     if (!analysis.hasVowel && analysis.consonantCount > 0 && !analysis.hasHalant) {
-      analysis.hasVowel = true;
-      analysis.vowelType = 'inherent';
-      analysis.vowelIsLong = false; // Inherent 'अ' is short
+      // Check if any consonant is NOT a half consonant
+      let hasFullConsonant = false;
+      for (let i = 0; i < chars.length; i++) {
+        if (D.isConsonant(chars[i])) {
+          let isHalf = false;
+          if (i > 0 && D.isHalant(chars[i - 1])) {
+            isHalf = true;
+          }
+          if (!isHalf) {
+            hasFullConsonant = true;
+            break;
+          }
+        }
+      }
+      if (hasFullConsonant) {
+        analysis.hasVowel = true;
+        analysis.vowelType = 'inherent';
+        analysis.vowelIsLong = false;
+      }
     }
 
     return analysis;
@@ -307,7 +378,7 @@ const SyllableParser = (() => {
     parseWords,
     isSpace,
     isPunctuation,
-    hasCompleteVowel,
+    hasVowelSound,
   };
 })();
 

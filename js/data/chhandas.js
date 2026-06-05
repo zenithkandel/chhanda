@@ -81,7 +81,7 @@ const ChhandasData = (() => {
     shardulavikridita: {
       padas: 4,
       perPada: 19,
-      pattern: "SSSIISIISIISSSIISII",
+      pattern: "SSSIISISSIISIISISS",
     },
     sragdhara: {
       padas: 4,

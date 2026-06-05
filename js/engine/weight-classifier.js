@@ -2,206 +2,200 @@
  * Weight Classifier
  * Determines whether a syllable is Guru (S/Heavy) or Laghu (I/Light)
  * Based on classical Sanskrit prosody rules
+ * 
+ * KEY RULES:
+ * 1. Long vowel → Guru
+ * 2. Anusvāra (ं) → Guru
+ * 3. Visarga (ः) → Guru
+ * 4. Closed syllable (ends with halant ्) → Guru
+ * 5. Conjunct consonants → Guru
+ * 6. Short vowel (open syllable) → Laghu
  */
 
 const WeightClassifier = (() => {
   const D = window.DewanagariUtils;
 
-  // Short vowels - naturally Laghu
-  const SHORT_VOWELS = ['\u0905', '\u0907', '\u0909', '\u090B', '\u090C']; // अ इ उ ऋ ऌ
-
-  // Long vowels - naturally Guru
-  const LONG_VOWELS = ['\u0906', '\u0908', '\u090A', '\u090F', '\u0910', '\u0913', '\u0914']; // आ ई ऊ ए ऐ ओ औ
+  // Long vowel matras
+  const LONG_MATRAS = new Set([
+    '\u093E', // ा (aa)
+    '\u0940', // ी (ii)
+    '\u0942', // ू (uu)
+    '\u0947', // े (e)
+    '\u0948', // ै (ai)
+    '\u094B', // ो (o)
+    '\u094C', // ौ (au)
+  ]);
 
   // Short vowel matras
-  const SHORT_MATRAS = ['\u093F', '\u0941', '\u0943']; // ि ु ृ
+  const SHORT_MATRAS = new Set([
+    '\u093F', // ि (i)
+    '\u0941', // ु (u)
+    '\u0943', // ृ (ri)
+  ]);
 
-  // Long vowel matras
-  const LONG_MATRAS = ['\u093E', '\u0940', '\u0942', '\u0947', '\u0948', '\u094B', '\u094C']; // ा ी ू े ै ो ौ
+  // Long vowels
+  const LONG_VOWELS = new Set([
+    '\u0906', // आ
+    '\u0908', // ई
+    '\u090A', // ऊ
+    '\u090F', // ए
+    '\u0910', // ऐ
+    '\u0913', // ओ
+    '\u0914', // औ
+  ]);
+
+  // Short vowels
+  const SHORT_VOWELS = new Set([
+    '\u0905', // अ
+    '\u0907', // इ
+    '\u0909', // उ
+    '\u090B', // ऋ
+    '\u090C', // ऌ
+  ]);
 
   /**
    * Main classification function
    * Determines if a syllable is Guru (S) or Laghu (I)
    * 
    * @param {string} syllable - Single syllable in Devanagari
-   * @returns {{weight: 'S'|'I', reason: string, details: Object}}
+   * @returns {{weight: 'S'|'I', reason: string}}
    * 
    * Examples:
-   * classifyWeight("ना") → {weight: 'S', reason: 'long_vowel_आ'}
-   * classifyWeight("म") → {weight: 'I', reason: 'short_vowel_inherent_अ'}
-   * classifyWeight("अन्त") → {weight: 'S', reason: 'closed_syllable_halant'}
+   * classifyWeight("दिन्") → {weight: 'S', reason: 'closed_syllable'}
+   * classifyWeight("ना") → {weight: 'S', reason: 'long_vowel'}
+   * classifyWeight("म") → {weight: 'I', reason: 'short_vowel_inherent'}
    */
   function classifyWeight(syllable) {
     if (!syllable || typeof syllable !== 'string') {
-      return { weight: 'I', reason: 'empty_input', details: {} };
+      return { weight: 'I', reason: 'empty_input' };
     }
 
     const chars = D.toCharArray(syllable);
-    const analysis = {
-      text: syllable,
-      hasLongVowel: false,
-      hasShortVowel: false,
-      vowelType: null,
-      hasHalant: false,
-      hasAnusvara: false,
-      hasVisarga: false,
-      hasConjunct: false,
-      isClosed: false,
-    };
 
-    // Step 1: Analyze the syllable structure
+    // Track what we find in this syllable
+    let hasLongVowel = false;
+    let hasShortVowel = false;
+    let hasAnusvara = false;
+    let hasVisarga = false;
+    let hasHalant = false;
+    let hasConjunct = false;
+    let lastConsonantIndex = -1;
+
+    // Analyze each character
     for (let i = 0; i < chars.length; i++) {
       const char = chars[i];
 
-      // Check for independent vowels
+      // Independent vowel
       if (D.isVowel(char)) {
-        if (LONG_VOWELS.includes(char)) {
-          analysis.hasLongVowel = true;
-          analysis.vowelType = 'independent_long';
-        } else if (SHORT_VOWELS.includes(char)) {
-          analysis.hasShortVowel = true;
-          analysis.vowelType = 'independent_short';
+        if (LONG_VOWELS.has(char)) {
+          hasLongVowel = true;
+        } else if (SHORT_VOWELS.has(char)) {
+          hasShortVowel = true;
         }
       }
-
-      // Check for vowel signs (matras)
+      // Matra (vowel sign)
       else if (D.isMatra(char)) {
         if (D.isHalant(char)) {
-          analysis.hasHalant = true;
-        } else if (LONG_MATRAS.includes(char)) {
-          analysis.hasLongVowel = true;
-          analysis.vowelType = 'matra_long';
-        } else if (SHORT_MATRAS.includes(char)) {
-          analysis.hasShortVowel = true;
-          analysis.vowelType = 'matra_short';
+          hasHalant = true;
+        } else if (LONG_MATRAS.has(char)) {
+          hasLongVowel = true;
+        } else if (SHORT_MATRAS.has(char)) {
+          hasShortVowel = true;
         }
       }
-
-      // Check for anusvāra
+      // Anusvāra
       else if (D.isAnusvara(char)) {
-        analysis.hasAnusvara = true;
+        hasAnusvara = true;
       }
-
-      // Check for visarga
+      // Visarga
       else if (D.isVisarga(char)) {
-        analysis.hasVisarga = true;
+        hasVisarga = true;
       }
-
-      // Check for consonants (for conjunct detection)
+      // Consonant
       else if (D.isConsonant(char)) {
-        // We'll check conjuncts separately
+        lastConsonantIndex = i;
+        // Check for conjunct (consecutive consonants without halant between)
+        if (i > 0) {
+          const prev = chars[i - 1];
+          if (D.isConsonant(prev) && !D.isHalant(prev)) {
+            hasConjunct = true;
+          }
+        }
       }
     }
 
-    // Check for conjunct consonants (consecutive consonants without halant between them)
-    let consecutiveConsonants = 0;
-    for (let i = 0; i < chars.length; i++) {
-      if (D.isConsonant(chars[i])) {
-        consecutiveConsonants++;
-        if (consecutiveConsonants >= 2) {
-          // Check if there's a halant between them
-          let hasHalantBetween = false;
-          for (let j = i - consecutiveConsonants + 1; j < i; j++) {
-            if (D.isHalant(chars[j])) {
-              hasHalantBetween = true;
-              break;
-            }
+    // Check if syllable ends with halant (closed syllable)
+    // A syllable ending with halant + consonant means the last consonant is a half consonant
+    // This makes the syllable closed and therefore Guru
+    if (hasHalant) {
+      return { weight: 'S', reason: 'closed_syllable_halant' };
+    }
+
+    // Check for anusvāra → Guru
+    if (hasAnusvara) {
+      return { weight: 'S', reason: 'anusvara' };
+    }
+
+    // Check for visarga → Guru
+    if (hasVisarga) {
+      return { weight: 'S', reason: 'visarga' };
+    }
+
+    // Check for long vowel → Guru
+    if (hasLongVowel) {
+      return { weight: 'S', reason: 'long_vowel' };
+    }
+
+    // Check for conjunct consonant → Guru
+    if (hasConjunct) {
+      return { weight: 'S', reason: 'conjunct_consonant' };
+    }
+
+    // Check for short vowel → Laghu
+    if (hasShortVowel) {
+      return { weight: 'I', reason: 'short_vowel' };
+    }
+
+    // Check for inherent vowel (consonant without explicit vowel)
+    // If we have consonants but no explicit vowel mark, it's inherent अ (short)
+    if (chars.length > 0) {
+      let hasInherentVowel = false;
+      for (let i = 0; i < chars.length; i++) {
+        if (D.isConsonant(chars[i])) {
+          // Check if this consonant is a half consonant (preceded by halant)
+          let isHalfConsonant = false;
+          if (i > 0 && D.isHalant(chars[i - 1])) {
+            isHalfConsonant = true;
           }
-          if (!hasHalantBetween) {
-            analysis.hasConjunct = true;
+          // Check if this consonant is followed by halant
+          let followedByHalant = false;
+          if (i + 1 < chars.length && D.isHalant(chars[i + 1])) {
+            followedByHalant = true;
+          }
+          // Check if this consonant is followed by a matra
+          let followedByMatra = false;
+          if (i + 1 < chars.length && D.isMatra(chars[i + 1]) && !D.isHalant(chars[i + 1])) {
+            followedByMatra = true;
+          }
+
+          // A consonant has inherent vowel if:
+          // - It's NOT a half consonant
+          // - It's NOT followed by halant
+          // - It's NOT followed by a matra
+          if (!isHalfConsonant && !followedByHalant && !followedByMatra) {
+            hasInherentVowel = true;
             break;
           }
         }
-      } else if (!D.isNukta(chars[i])) {
-        consecutiveConsonants = 0;
+      }
+
+      if (hasInherentVowel) {
+        return { weight: 'I', reason: 'short_vowel_inherent' };
       }
     }
 
-    // Check if syllable is closed (ends with halant)
-    if (analysis.hasHalant) {
-      analysis.isClosed = true;
-    }
-
-    // Step 2: Apply classification rules (priority order)
-
-    // Rule 1: Long vowel → Guru
-    if (analysis.hasLongVowel) {
-      return {
-        weight: 'S',
-        reason: `long_vowel_${analysis.vowelType}`,
-        details: analysis,
-      };
-    }
-
-    // Rule 2: Anusvāra → Guru
-    if (analysis.hasAnusvara) {
-      return {
-        weight: 'S',
-        reason: 'anusvara',
-        details: analysis,
-      };
-    }
-
-    // Rule 3: Visarga → Guru
-    if (analysis.hasVisarga) {
-      return {
-        weight: 'S',
-        reason: 'visarga',
-        details: analysis,
-      };
-    }
-
-    // Rule 4: Closed syllable (halant) → Guru
-    if (analysis.isClosed) {
-      return {
-        weight: 'S',
-        reason: 'closed_syllable_halant',
-        details: analysis,
-      };
-    }
-
-    // Rule 5: Conjunct consonant → Guru
-    if (analysis.hasConjunct) {
-      return {
-        weight: 'S',
-        reason: 'conjunct_consonant',
-        details: analysis,
-      };
-    }
-
-    // Rule 6: Short vowel (open syllable) → Laghu
-    if (analysis.hasShortVowel) {
-      return {
-        weight: 'I',
-        reason: `short_vowel_${analysis.vowelType}`,
-        details: analysis,
-      };
-    }
-
-    // Rule 7: Inherent vowel (consonant alone) → Laghu (short अ)
-    // Check if syllable is just a consonant with no explicit vowel marking
-    const hasAnyVowelMarking = analysis.hasLongVowel || analysis.hasShortVowel ||
-                                analysis.hasHalant || analysis.hasAnusvara || analysis.hasVisarga;
-
-    if (!hasAnyVowelMarking && chars.length > 0) {
-      // Check if all characters are consonants (possibly with nukta)
-      const allConsonants = chars.every(c => D.isConsonant(c) || D.isNukta(c));
-      if (allConsonants) {
-        // Inherent vowel अ (short) → Laghu
-        return {
-          weight: 'I',
-          reason: 'inherent_short_vowel_अ',
-          details: analysis,
-        };
-      }
-    }
-
-    // Default: Laghu (short vowel assumed)
-    return {
-      weight: 'I',
-      reason: 'default_short',
-      details: analysis,
-    };
+    // Default: Laghu
+    return { weight: 'I', reason: 'default' };
   }
 
   /**
@@ -218,40 +212,6 @@ const WeightClassifier = (() => {
         reason: result.reason,
       };
     });
-  }
-
-  /**
-   * Gets detailed explanation for weight classification
-   * @param {string} syllable
-   * @returns {string} Human-readable explanation
-   */
-  function explainClassification(syllable) {
-    const result = classifyWeight(syllable);
-    const weightName = result.weight === 'S' ? 'गुरु (Guru/Heavy)' : 'लघु (Laghu/Light)';
-
-    let explanation = `"${syllable}" is classified as ${weightName}.\n`;
-    explanation += `Reason: ${result.reason}\n`;
-
-    if (result.details.hasLongVowel) {
-      explanation += `- Contains a long vowel\n`;
-    }
-    if (result.details.hasShortVowel) {
-      explanation += `- Contains a short vowel\n`;
-    }
-    if (result.details.hasHalant) {
-      explanation += `- Contains halant (closing consonant)\n`;
-    }
-    if (result.details.hasAnusvara) {
-      explanation += `- Contains anusvāra\n`;
-    }
-    if (result.details.hasVisarga) {
-      explanation += `- Contains visarga\n`;
-    }
-    if (result.details.hasConjunct) {
-      explanation += `- Contains conjunct consonant\n`;
-    }
-
-    return explanation;
   }
 
   /**
@@ -295,15 +255,10 @@ const WeightClassifier = (() => {
   return {
     classifyWeight,
     classifySyllables,
-    explainClassification,
     isGuru,
     isLaghu,
     getMatraCount,
     totalMatras,
-    SHORT_VOWELS,
-    LONG_VOWELS,
-    SHORT_MATRAS,
-    LONG_MATRAS,
   };
 })();
 
