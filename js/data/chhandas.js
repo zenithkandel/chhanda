@@ -7,86 +7,110 @@ const ChhandasData = (() => {
   let data = null;
 
   // Default chhanda patterns (SISI templates)
-  // These are the standard patterns for matching
+  // Based on traditional gana classifications
+  // Gana reference: Ma=SSS, Ya=ISS, Ra=SIS, Ta=SSI, Ja=ISI, Bha=SII, Sa=IIS, Na=III
   const SISI_PATTERNS = {
     gayatri: {
       padas: 3,
       perPada: 8,
       pattern: "IISSISII",
-      // Note: Gayatri typically uses variations, but this is the base pattern
+      description: "ययट् ययट् ययट्",
     },
     anushtubh: {
       padas: 4,
       perPada: 8,
       pattern: "IISSISII",
-      // Anushtubh (Chandashtubh) base pattern
+      description: "ययट् ययट् ययट् ययट्",
     },
     indravajra: {
       padas: 4,
       perPada: 11,
-      pattern: "SISIISIISII",
+      pattern: "SSISSIISISS",
+      description: "तत्जगाग (Ta Ta Ja Ga Ga)",
     },
     upendravajra: {
       padas: 4,
       perPada: 11,
-      pattern: "ISIISIISIIS",
+      pattern: "ISISSIISISS",
+      description: "जत्जगाग (Ja Ta Ja Ga Ga)",
     },
     upajati: {
       padas: 4,
       perPada: 11,
-      // Upajati is a mix of Indravajra and Upendravajra
-      // Each line can be either pattern
-      patterns: ["SISIISIISII", "ISIISIISIIS"],
+      patterns: ["SSISSIISISS", "ISISSIISISS"],
+      description: "Blend of Indravajra and Upendravajra",
     },
     bhujangaprayata: {
       padas: 4,
       perPada: 12,
-      pattern: "IIISIISSIIIS",
+      pattern: "ISSISSISSISS",
+      description: "यययय (Ya Ya Ya Ya)",
     },
     totaka: {
       padas: 4,
       perPada: 12,
-      pattern: "SSSSIIIIISSS",
+      pattern: "IISIISIISIIS",
+      description: "सससस (Sa Sa Sa Sa)",
+    },
+    drutavilambita: {
+      padas: 4,
+      perPada: 12,
+      pattern: "IIISIISIISIS",
+      description: "नभभर (Na Bha Bha Ra)",
     },
     vamshastha: {
       padas: 4,
       perPada: 12,
       pattern: "IISIISIISIIS",
+      description: "नसरभ (Na Sa Ra Bha)",
     },
     vasantatilaka: {
       padas: 4,
       perPada: 14,
-      pattern: "SISIISIISIISII",
+      pattern: "SSISIIISIISSIS",
+      description: "तभजजगग (Ta Bha Ja Ja Ga Ga)",
     },
     malini: {
       padas: 4,
       perPada: 15,
-      pattern: "ISIISIISIISIII",
+      pattern: "IIIIISSSISSISS",
+      description: "नननमयय (Na Na Na Ma Ya Ya)",
     },
     panchachamara: {
       padas: 4,
       perPada: 16,
-      pattern: "SISIISIISIISIIII",
+      pattern: "ISIISIISIISIIII",
+      description: "जरजरजग (Ja Ra Ja Ra Ja Ga)",
     },
     shikhari: {
       padas: 4,
       perPada: 17,
-      pattern: "SSSSIIIISSSSIIIII",
+      pattern: "ISSSSSIIIIISSIIIS",
+      description: "यमनसभलग (Ya Ma Na Sa Bha La Ga)",
     },
     mandakranta: {
       padas: 4,
       perPada: 17,
-      pattern: "SSSSIIIIISSSSIIII",
+      pattern: "SSSSIIIIISSISSIS",
+      description: "मभनत्तगग (Ma Bha Na Ta Ta Ga Ga)",
+    },
+    harini: {
+      padas: 4,
+      perPada: 17,
+      pattern: "IIIIIS SSSSSISIIS IS",
+      description: "नसमरसलग (Na Sa Ma Ra Sa La Ga)",
     },
     shardulavikridita: {
       padas: 4,
       perPada: 19,
-      pattern: "SSSIISISSIISIISISS",
+      pattern: "SSSIISISIISSSISI S",
+      description: "मसजसत्तग (Ma Sa Ja Sa Ta Ta Ga)",
     },
     sragdhara: {
       padas: 4,
       perPada: 21,
-      pattern: "SSSIISSIISSIIISSIISSS",
+      pattern: "SSSSISSIIIIIISSISSISS",
+      description: "मरभनययय (Ma Ra Bha Na Ya Ya Ya)",
     },
   };
 

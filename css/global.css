@@ -38,11 +38,11 @@
   --color-info-light: #22d3ee;
   --color-info-bg: #cffafe;
 
-  /* Syllable Colors (Guru/Laghu) */
-  --color-laghu: #16a34a;
-  --color-laghu-bg: #dcfce7;
-  --color-guru: #dc2626;
-  --color-guru-bg: #fee2e2;
+  /* Syllable Colors (Guru/Laghu) - Neutral colors, no good/bad connotation */
+  --color-laghu: #2563eb;
+  --color-laghu-bg: #dbeafe;
+  --color-guru: #ea580c;
+  --color-guru-bg: #fff7ed;
 
   /* Neutral Colors */
   --color-white: #ffffff;
