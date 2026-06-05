@@ -92,7 +92,7 @@ const SyllableDisplay = (() => {
       const isGuru = char === 'S';
       const barHeight = isGuru ? height * 0.8 : height * 0.4;
       const y = height - barHeight;
-      const color = isGuru ? '#dc2626' : '#16a34a';
+      const color = isGuru ? '#ea580c' : '#2563eb';
 
       svgContent += `<rect x="${x + 2}" y="${y}" width="${beatWidth - 4}" height="${barHeight}" fill="${color}" rx="2"/>`;
       svgContent += `<text x="${x + beatWidth / 2}" y="${height - 5}" text-anchor="middle" font-size="10" fill="#666">${char}</text>`;
@@ -125,11 +125,11 @@ const SyllableDisplay = (() => {
         </div>
         <div class="stat">
           <span class="stat-label text-muted text-sm">Guru (S)</span>
-          <span class="stat-value font-bold text-lg text-danger">${guruCount}</span>
+          <span class="stat-value font-bold text-lg" style="color: #ea580c">${guruCount}</span>
         </div>
         <div class="stat">
           <span class="stat-label text-muted text-sm">Laghu (I)</span>
-          <span class="stat-value font-bold text-lg text-success">${laghuCount}</span>
+          <span class="stat-value font-bold text-lg" style="color: #2563eb">${laghuCount}</span>
         </div>
         <div class="stat">
           <span class="stat-label text-muted text-sm">Total Mātrās</span>

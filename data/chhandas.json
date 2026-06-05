@@ -176,6 +176,31 @@
       }
     },
     {
+      "id": "drutavilambita",
+      "name": {
+        "en": "Drutavilambita",
+        "np": "द्रुतविलम्बित"
+      },
+      "description": {
+        "en": "12-syllable metre meaning 'Fast and Slow'. Dynamic, flowing, and narrative.",
+        "np": "१२-अक्षर छन्द जसको अर्थ 'द्रुत र विलम्बित'। गतिशील, प्रवाहित र वर्णनात्मक।"
+      },
+      "syllablesPerPada": 12,
+      "totalSyllables": 48,
+      "padas": 4,
+      "pattern": "12+12+12+12",
+      "ganas": ["न", "भ", "भ", "र"],
+      "mood": ["dynamic", "flowing", "narrative"],
+      "difficulty": "intermediate",
+      "popularity": 65,
+      "relatedChhandas": ["totaka", "vamshastha"],
+      "famousPoets": ["Bharavi"],
+      "historicalNote": {
+        "en": "A metre that alternates between rapid and measured rhythms.",
+        "np": "द्रुत र मितव्ययी लयबीच अन्तर गर्ने छन्द।"
+      }
+    },
+    {
       "id": "vamshastha",
       "name": {
         "en": "Vaṃśastha",
@@ -323,6 +348,31 @@
       "historicalNote": {
         "en": "The Meghadūta of Kālidāsa is the most famous work in this metre.",
         "np": "कालिदासको मेघदूत यस छन्दमा लिखित सबैभन्दा प्रसिद्ध कृति हो।"
+      }
+    },
+    {
+      "id": "harini",
+      "name": {
+        "en": "Hariṇī",
+        "np": "हरिणी"
+      },
+      "description": {
+        "en": "17-syllable metre meaning 'Doe' or 'Deer'. Graceful, elegant, and flowing.",
+        "np": "१७-अक्षर छन्द जसको अर्थ 'हरिणी' वा 'मृगी'। कृपालु, सुन्दर र प्रवाहित।"
+      },
+      "syllablesPerPada": 17,
+      "totalSyllables": 68,
+      "padas": 4,
+      "pattern": "17+17+17+17",
+      "ganas": ["न", "स", "म", "र", "स", "ल", "ग"],
+      "mood": ["graceful", "elegant", "flowing"],
+      "difficulty": "advanced",
+      "popularity": 70,
+      "relatedChhandas": ["shikhari", "mandakranta"],
+      "famousPoets": ["Kalidasa"],
+      "historicalNote": {
+        "en": "Named after the graceful deer, reflecting its elegant rhythm.",
+        "np": "कृपालु हरिणीको नाममा नामाकरण गरिएको, यसको सुन्दर लयलाई प्रतिबिम्बित गर्दछ।"
       }
     },
     {

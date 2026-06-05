@@ -91,19 +91,19 @@ const ChhandasData = (() => {
     mandakranta: {
       padas: 4,
       perPada: 17,
-      pattern: "SSSSIIIIISSISSIS",
+      pattern: "SSSSIIIIISSISSISS",
       description: "मभनत्तगग (Ma Bha Na Ta Ta Ga Ga)",
     },
     harini: {
       padas: 4,
       perPada: 17,
-      pattern: "IIIIIS SSSSSISIIS IS",
+      pattern: "IIIIISSSSSISIISIS",
       description: "नसमरसलग (Na Sa Ma Ra Sa La Ga)",
     },
     shardulavikridita: {
       padas: 4,
       perPada: 19,
-      pattern: "SSSIISISIISSSISI S",
+      pattern: "SSSIISISIIISSSISSIS",
       description: "मसजसत्तग (Ma Sa Ja Sa Ta Ta Ga)",
     },
     sragdhara: {
@@ -115,21 +115,24 @@ const ChhandasData = (() => {
   };
 
   // Traditional gana patterns for each chhanda
+  // Gana reference: Ma=SSS, Ya=ISS, Ra=SIS, Ta=SSI, Ja=ISI, Bha=SII, Sa=IIS, Na=III
   const GANA_PATTERNS = {
     gayatri: "ययट् ययट् ययट्",
     anushtubh: "ययट् ययट् ययट् ययट्",
-    indravajra: "रभनय",
-    upendravajra: "नरभय",
-    upajati: "रभनय/नरभय (mixed)",
+    indravajra: "तत्जगाग",
+    upendravajra: "जत्जगाग",
+    upajati: "तत्जगाग/जत्जगाग (mixed)",
     bhujangaprayata: "यययय",
     totaka: "सससस",
+    drutavilambita: "नभभर",
     vamshastha: "नसरभ",
-    vasantatilaka: "यनतर",
-    malini: "जरभन",
+    vasantatilaka: "तभजजगग",
+    malini: "नननमयय",
     panchachamara: "जरजरजग",
-    shikhari: "मसजसतत",
-    mandakranta: "मन्दक्रान्ता",
-    shardulavikridita: "मसजसततग",
+    shikhari: "यमनसभलग",
+    mandakranta: "मभनत्तगग",
+    harini: "नसमरसलग",
+    shardulavikridita: "मसजसत्तग",
     sragdhara: "मरभनययय",
   };
 
@@ -349,12 +352,14 @@ const ChhandasData = (() => {
       { id: "upajati", name: { en: "Upajāti", np: "उपजाति" }, syllablesPerPada: 11, totalSyllables: 44, padas: 4, difficulty: "intermediate", popularity: 88, mood: ["philosophical", "grand", "balanced"] },
       { id: "bhujangaprayata", name: { en: "Bhujanga-prayāta", np: "भुजङ्गप्रयात" }, syllablesPerPada: 12, totalSyllables: 48, padas: 4, difficulty: "intermediate", popularity: 75, mood: ["devotional", "flowing", "musical"] },
       { id: "totaka", name: { en: "Toṭaka", np: "तोटक" }, syllablesPerPada: 12, totalSyllables: 48, padas: 4, difficulty: "intermediate", popularity: 72, mood: ["energetic", "rhythmic", "chant-like"] },
+      { id: "drutavilambita", name: { en: "Drutavilambita", np: "द्रुतविलम्बित" }, syllablesPerPada: 12, totalSyllables: 48, padas: 4, difficulty: "intermediate", popularity: 65, mood: ["dynamic", "flowing", "narrative"] },
       { id: "vamshastha", name: { en: "Vaṃśastha", np: "वंशस्थ" }, syllablesPerPada: 12, totalSyllables: 48, padas: 4, difficulty: "intermediate", popularity: 70, mood: ["balanced", "narrative"] },
       { id: "vasantatilaka", name: { en: "Vasantatilakā", np: "वसन्ततिलका" }, syllablesPerPada: 14, totalSyllables: 56, padas: 4, difficulty: "advanced", popularity: 82, mood: ["romantic", "refined", "beautiful"] },
       { id: "malini", name: { en: "Mālinī", np: "मालिनी" }, syllablesPerPada: 15, totalSyllables: 60, padas: 4, difficulty: "advanced", popularity: 76, mood: ["graceful", "devotional"] },
       { id: "panchachamara", name: { en: "Pañcacāmara", np: "पञ्चचामर" }, syllablesPerPada: 16, totalSyllables: 64, padas: 4, difficulty: "advanced", popularity: 68, mood: ["royal", "ceremonial", "majestic"] },
       { id: "shikhari", name: { en: "Śikhariṇī", np: "शिखरिणी" }, syllablesPerPada: 17, totalSyllables: 68, padas: 4, difficulty: "advanced", popularity: 74, mood: ["elevated", "noble", "grand"] },
       { id: "mandakranta", name: { en: "Mandākrāntā", np: "मन्दाक्रान्ता" }, syllablesPerPada: 17, totalSyllables: 68, padas: 4, difficulty: "advanced", popularity: 92, mood: ["longing", "separation", "beauty", "romance"] },
+      { id: "harini", name: { en: "Hariṇī", np: "हरिणी" }, syllablesPerPada: 17, totalSyllables: 68, padas: 4, difficulty: "advanced", popularity: 70, mood: ["graceful", "elegant", "flowing"] },
       { id: "shardulavikridita", name: { en: "Śārdūlavikrīḍita", np: "शार्दूलविक्रीडित" }, syllablesPerPada: 19, totalSyllables: 76, padas: 4, difficulty: "advanced", popularity: 85, mood: ["heroic", "majestic", "philosophical", "powerful"] },
       { id: "sragdhara", name: { en: "Sragdharā", np: "स्रग्धरा" }, syllablesPerPada: 21, totalSyllables: 84, padas: 4, difficulty: "advanced", popularity: 70, mood: ["epic", "expansive", "magnificent"] },
     ];
