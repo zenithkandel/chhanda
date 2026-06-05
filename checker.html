@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>छन्द जाँच | Chhanda Checker</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/checker.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1 data-i18n="checker.title">छन्द जाँच</h1>
+      <p data-i18n="checker.subtitle">छन्द शुद्धताका लागि आफ्नो कविता विश्लेषण गर्नुहोस्</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="checker-layout">
+      <!-- Input Section -->
+      <div class="checker-input-section">
+        <div class="card">
+          <!-- Input Tabs -->
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('direct')">प्रत्यक्ष टाइप</button>
+            <button class="tab" onclick="switchTab('transliterate')">रोमन → देवनागरी</button>
+            <button class="tab" onclick="switchTab('paste')">पेस्ट गर्नुहोस्</button>
+          </div>
+
+          <!-- Direct Input -->
+          <div id="tab-direct" class="tab-content">
+            <div class="form-group">
+              <label class="form-label" data-i18n="checker.inputLabel">कविता प्रविष्ट गर्नुहोस्</label>
+              <textarea id="input-text" class="form-textarea font-devanagari" rows="8"
+                placeholder="यहाँ आफ्नो देवनागरी पाठ टाइप वा पेस्ट गर्नुहोस्..."
+                oninput="autoAnalyze()"></textarea>
+            </div>
+          </div>
+
+          <!-- Transliteration Input -->
+          <div id="tab-transliterate" class="tab-content hidden">
+            <div class="form-group">
+              <label class="form-label">रोमनमा टाइप गर्नुहोस्</label>
+              <input type="text" id="input-roman" class="form-input"
+                placeholder="Type in Roman script..."
+                oninput="handleTransliteration()">
+              <div class="text-sm text-muted mt-2">अनुवाद: <span id="transliteration-preview" class="font-devanagari"></span></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">देवनागरी परिणाम</label>
+              <textarea id="input-transliterated" class="form-textarea font-devanagari" rows="6"
+                placeholder="देवनागरी यहाँ देखिनेछ..."
+                oninput="autoAnalyze()"></textarea>
+            </div>
+          </div>
+
+          <!-- Paste Input -->
+          <div id="tab-paste" class="tab-content hidden">
+            <div class="form-group">
+              <label class="form-label">कविता पेस्ट गर्नुहोस्</label>
+              <textarea id="input-paste" class="form-textarea font-devanagari" rows="8"
+                placeholder="यहाँ देवनागरी पाठ पेस्ट गर्नुहोस्..."
+                oninput="autoAnalyze()"></textarea>
+            </div>
+          </div>
+
+          <!-- Target Chhanda Selector -->
+          <div class="form-group">
+            <label class="form-label" data-i18n="checker.targetChhanda">लक्ष्य छन्द (वैकल्पिक)</label>
+            <select id="target-chhanda" class="form-select" onchange="autoAnalyze()">
+              <option value="">कुनै पनि छन्द (स्वतः पत्ता लगाउने)</option>
+            </select>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-3">
+            <button class="btn btn-primary" onclick="analyzeText()" data-i18n="checker.analyze">विश्लेषण गर्नुहोस्</button>
+            <button class="btn btn-ghost" onclick="clearInput()" data-i18n="checker.clear">सफा गर्नुहोस्</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results-section" class="checker-results-section hidden">
+        <!-- Syllable Breakdown -->
+        <div class="card mb-6">
+          <h3 class="card-title" data-i18n="checker.syllableBreakdown">अक्षर विभाजन</h3>
+          <div id="syllable-breakdown"></div>
+        </div>
+
+        <!-- SISI Code -->
+        <div class="card mb-6">
+          <h3 class="card-title" data-i18n="checker.sisiCode">SISI कोड</h3>
+          <div id="sisi-display" class="sisi-code"></div>
+        </div>
+
+        <!-- Matched Chhanda -->
+        <div class="card mb-6" id="match-card">
+          <h3 class="card-title" data-i18n="checker.matchedChhanda">मिलेको छन्द</h3>
+          <div id="matched-chhanda"></div>
+        </div>
+
+        <!-- Mistakes -->
+        <div class="card mb-6" id="mistakes-card" style="display: none;">
+          <h3 class="card-title" data-i18n="checker.mistakes">भिन्नताहरू फेला भए</h3>
+          <div id="mistakes-display"></div>
+        </div>
+
+        <!-- Corrections -->
+        <div class="card mb-6" id="corrections-card" style="display: none;">
+          <h3 class="card-title" data-i18n="checker.corrections">सुझाइएका सच्याइहरू</h3>
+          <div id="corrections-display"></div>
+        </div>
+
+        <!-- Rhythm Visualization -->
+        <div class="card mb-6">
+          <h3 class="card-title">लय दृश्य</h3>
+          <div id="rhythm-display"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>छन्द कविता मार्गदर्शक &copy; 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script src="js/engine/chhanda-matcher.js"></script>
+  <script src="js/engine/mistake-detector.js"></script>
+  <script src="js/engine/transliterator.js"></script>
+  <script src="js/ui/language.js"></script>
+  <script src="js/ui/nav.js"></script>
+  <script src="js/ui/syllable-display.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script>
+    // Initialize
+    Nav.inject('checker');
+    Language.applyTranslations();
+    populateChhandaSelect();
+
+    let currentInput = '';
+    let analyzeTimeout = null;
+
+    // Populate chhanda select dropdown
+    function populateChhandaSelect() {
+      const select = document.getElementById('target-chhanda');
+      const chhandas = ChhandasData.getAll();
+
+      chhandas.forEach(ch => {
+        const option = document.createElement('option');
+        option.value = ch.id;
+        option.textContent = `${ch.name.np} (${ch.name.en}) - ${ch.syllablesPerPada} अक्षर`;
+        select.appendChild(option);
+      });
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      event.target.classList.add('active');
+    }
+
+    // Transliteration handler
+    function handleTransliteration() {
+      const roman = document.getElementById('input-roman').value;
+      const devanagari = Transliterator.transliterateToDevanagari(roman);
+      document.getElementById('transliteration-preview').textContent = devanagari;
+      document.getElementById('input-transliterated').value = devanagari;
+      autoAnalyze();
+    }
+
+    // Auto-analyze with debounce
+    function autoAnalyze() {
+      if (analyzeTimeout) clearTimeout(analyzeTimeout);
+      analyzeTimeout = setTimeout(() => {
+        const text = getActiveInput();
+        if (text && text.length > 0) {
+          analyzeText();
+        }
+      }, 500);
+    }
+
+    // Get text from active input
+    function getActiveInput() {
+      const directTab = document.getElementById('tab-direct');
+      const transliterateTab = document.getElementById('tab-transliterate');
+      const pasteTab = document.getElementById('tab-paste');
+
+      if (!directTab.classList.contains('hidden')) {
+        return document.getElementById('input-text').value;
+      } else if (!transliterateTab.classList.contains('hidden')) {
+        return document.getElementById('input-transliterated').value;
+      } else if (!pasteTab.classList.contains('hidden')) {
+        return document.getElementById('input-paste').value;
+      }
+      return '';
+    }
+
+    // Main analysis function
+    function analyzeText() {
+      const text = getActiveInput().trim();
+      if (!text) {
+        Toast.warning('कृपया पाठ प्रविष्ट गर्नुहोस्');
+        return;
+      }
+
+      currentInput = text;
+      const targetChhanda = document.getElementById('target-chhanda').value;
+
+      // Show results section
+      document.getElementById('results-section').classList.remove('hidden');
+
+      // Perform analysis
+      const lineAnalyses = SISIGenerator.generateFromTextByLine(text);
+      const allSyllables = [];
+      lineAnalyses.forEach(l => allSyllables.push(...l.syllables));
+
+      // Generate SISI for each line
+      const lineResults = lineAnalyses.map(l => ({
+        line: l.line,
+        sisi: l.sisi,
+        syllables: l.syllables,
+        syllableCount: l.syllables.length,
+      }));
+
+      // Match chhandas
+      let bestMatches = [];
+      const syllableCounts = [...new Set(lineResults.map(l => l.syllableCount))];
+
+      syllableCounts.forEach(count => {
+        const sisi = lineResults.find(l => l.syllableCount === count)?.sisi || '';
+        const matches = ChhandaMatcher.matchChhanda(sisi, count);
+        bestMatches.push(...matches);
+      });
+
+      // Remove duplicates and sort
+      bestMatches = [...new Map(bestMatches.map(m => [m.chhandaId, m])).values()];
+      bestMatches.sort((a, b) => b.confidence - a.confidence);
+
+      // Render syllable breakdown
+      renderSyllableBreakdown(lineResults);
+
+      // Render SISI
+      renderSISI(lineResults);
+
+      // Render matched chhanda
+      renderMatchedChhanda(bestMatches, targetChhanda);
+
+      // Detect mistakes if target chhanda is selected
+      if (targetChhanda) {
+        detectMistakesForTarget(lineResults, targetChhanda);
+      } else {
+        document.getElementById('mistakes-card').style.display = 'none';
+        document.getElementById('corrections-card').style.display = 'none';
+      }
+
+      // Render rhythm visualization
+      renderRhythm(lineResults);
+
+      Toast.success('विश्लेषण सम्पन्न!');
+    }
+
+    // Render syllable breakdown
+    function renderSyllableBreakdown(lineResults) {
+      const container = document.getElementById('syllable-breakdown');
+      let html = '';
+
+      lineResults.forEach((result, idx) => {
+        html += `
+          <div class="analysis-line mb-4 p-4" style="background: var(--color-gray-50); border-radius: var(--radius-md); border-left: 3px solid var(--color-primary);">
+            <div class="font-devanagari text-lg mb-2">${result.line}</div>
+            <div class="mb-2">${SyllableDisplay.render(result.syllables, { showLabels: true })}</div>
+            <div class="flex justify-between items-center mt-2">
+              <span class="font-mono text-sm text-muted">SISI: ${result.sisi}</span>
+              <span class="badge badge-primary">${result.syllableCount} अक्षर</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Render SISI code
+    function renderSISI(lineResults) {
+      const container = document.getElementById('sisi-display');
+      const allSisi = lineResults.map(l => l.sisi).join('\n');
+      const maxPerLine = Math.max(...lineResults.map(l => l.syllableCount));
+
+      container.innerHTML = lineResults.map(l =>
+        SISIGenerator.formatSISIForDisplay(l.sisi)
+      ).join('<br>');
+    }
+
+    // Render matched chhanda
+    function renderMatchedChhanda(matches, targetId) {
+      const container = document.getElementById('matched-chhanda');
+
+      if (!matches || matches.length === 0) {
+        container.innerHTML = '<p class="text-muted">कुनै मिलान फेला भएन</p>';
+        return;
+      }
+
+      let html = '<div class="match-list">';
+
+      matches.slice(0, 5).forEach(match => {
+        const ch = ChhandasData.getById(match.chhandaId);
+        if (!ch) return;
+
+        const isTarget = match.chhandaId === targetId;
+        const borderStyle = isTarget ? 'border: 2px solid var(--color-primary);' : '';
+        const bgColor = isTarget ? 'background: var(--color-primary-50);' : '';
+
+        html += `
+          <div class="match-item p-4 mb-3" style="border-radius: var(--radius-md); ${borderStyle} ${bgColor}">
+            <div class="flex justify-between items-center">
+              <div>
+                <strong class="font-devanagari text-lg">${ch.name.np}</strong>
+                <span class="text-muted ml-2">${ch.name.en}</span>
+              </div>
+              <span class="badge ${match.confidence >= 80 ? 'badge-success' : match.confidence >= 50 ? 'badge-warning' : 'badge-danger'}">
+                ${Math.round(match.confidence)}% मिलान
+              </span>
+            </div>
+            <div class="text-sm text-muted mt-2">
+              ${ch.syllablesPerPada} अक्षर/पंक्ति | ${ch.padas} पंक्ति | ${ch.mood.join(', ')}
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Detect mistakes for target chhanda
+    function detectMistakesForTarget(lineResults, targetChhanda) {
+      const pattern = ChhandasData.getSISIPattern(targetChhanda);
+      if (!pattern) return;
+
+      const linesWithClassified = lineResults.map(l => ({
+        line: l.line,
+        sisi: l.sisi,
+        syllables: l.syllables,
+        classified: WeightClassifier.classifySyllables(l.syllables),
+      }));
+
+      const mistakes = MistakeDetector.detectMistakes(linesWithClassified, targetChhanda);
+      const report = MistakeDetector.generateReport(mistakes);
+      const corrections = MistakeDetector.getCorrectionsByLine(mistakes);
+
+      // Show/hide cards
+      const mistakesCard = document.getElementById('mistakes-card');
+      const correctionsCard = document.getElementById('corrections-card');
+
+      if (mistakes.length > 0) {
+        mistakesCard.style.display = 'block';
+        correctionsCard.style.display = 'block';
+        renderMistakes(mistakes, report);
+        renderCorrections(corrections);
+      } else {
+        mistakesCard.style.display = 'none';
+        correctionsCard.style.display = 'none';
+        Toast.success('कविता छन्द अनुसार छ!');
+      }
+    }
+
+    // Render mistakes
+    function renderMistakes(mistakes, report) {
+      const container = document.getElementById('mistakes-display');
+
+      let html = `
+        <div class="mb-4 p-3" style="background: var(--color-warning-bg); border-radius: var(--radius-md);">
+          <strong>${report.summary}</strong>
+        </div>
+      `;
+
+      // Group by line
+      for (const [lineIdx, lineMistakes] of Object.entries(report.byLine)) {
+        html += `
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold mb-2">पंक्ति ${parseInt(lineIdx) + 1}</h4>
+            <div class="flex flex-wrap gap-2">
+        `;
+
+        lineMistakes.forEach(m => {
+          const expectedClass = m.expected === 'S' ? 'syllable-guru' : 'syllable-laghu';
+          const actualClass = m.actual === 'S' ? 'syllable-guru' : 'syllable-laghu';
+
+          html += `
+            <div class="mistake-item p-2" style="background: var(--color-gray-50); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+              <span class="font-devanagari">${m.syllable}</span>
+              <span class="text-muted mx-1">→</span>
+              <span class="${expectedClass} font-bold">${m.expected}</span>
+              <span class="text-muted mx-1">(अपेक्षित)</span>
+              <span class="${actualClass}">${m.actual}</span>
+              <span class="text-muted">(वास्तविक)</span>
+            </div>
+          `;
+        });
+
+        html += '</div></div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    // Render corrections
+    function renderCorrections(corrections) {
+      const container = document.getElementById('corrections-display');
+
+      let html = '';
+
+      corrections.forEach(correction => {
+        html += `
+          <div class="mb-4 p-4" style="background: var(--color-gray-50); border-radius: var(--radius-md);">
+            <h4 class="text-sm font-semibold mb-3">पंक्ति ${correction.lineIndex + 1}</h4>
+            <div class="corrections-list">
+        `;
+
+        correction.corrections.forEach(c => {
+          html += `
+            <div class="correction-item mb-2 p-3" style="background: var(--color-white); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-devanagari font-bold">${c.syllable}</span>
+                <span class="badge ${c.expected === 'S' ? 'badge-danger' : 'badge-success'}">${c.expected === 'S' ? 'गुरु चाहिन्छ' : 'लघु चाहिन्छ'}</span>
+              </div>
+              <div class="text-sm">
+                <strong>सुझाव:</strong> <span class="font-devanagari">${c.suggestion}</span>
+                <span class="text-muted ml-2">${c.reason}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        html += '</div></div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    // Render rhythm visualization
+    function renderRhythm(lineResults) {
+      const container = document.getElementById('rhythm-display');
+      const allSisi = lineResults.map(l => l.sisi).join('');
+
+      container.innerHTML = SyllableDisplay.renderRhythm(allSisi);
+    }
+
+    // Clear input
+    function clearInput() {
+      document.getElementById('input-text').value = '';
+      document.getElementById('input-roman').value = '';
+      document.getElementById('input-transliterated').value = '';
+      document.getElementById('input-paste').value = '';
+      document.getElementById('transliteration-preview').textContent = '';
+      document.getElementById('target-chhanda').value = '';
+      document.getElementById('results-section').classList.add('hidden');
+      currentInput = '';
+    }
+  </script>
+</body>
+</html>

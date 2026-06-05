@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>छन्द सूची | Chhanda Catalog</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/catalog.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1 data-i18n="catalog.title">छन्द सूची</h1>
+      <p data-i18n="catalog.subtitle">१५ शास्त्रीय छन्दहरू अन्वेषण गर्नुहोस्</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar card mb-6">
+      <div class="flex flex-wrap gap-4 items-center">
+        <div class="form-group mb-0 flex-1" style="min-width: 200px;">
+          <input type="text" id="search-input" class="form-input"
+            placeholder="छन्दहरू खोज्नुहोस्..." oninput="filterChhandas()">
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="filter-syllables" class="form-select" onchange="filterChhandas()">
+            <option value="">सबै अक्षर संख्या</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="filter-mood" class="form-select" onchange="filterChhandas()">
+            <option value="">सबै भाव</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="filter-difficulty" class="form-select" onchange="filterChhandas()">
+            <option value="">सबै कठिनाई</option>
+            <option value="beginner">शुरुवाती</option>
+            <option value="intermediate">मध्यम</option>
+            <option value="advanced">उन्नत</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="sort-by" class="form-select" onchange="filterChhandas()">
+            <option value="syllables">अक्षर अनुसार</option>
+            <option value="name">नाम अनुसार</option>
+            <option value="popularity">लोकप्रियता अनुसार</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chhanda Grid -->
+    <div id="chhanda-grid" class="chhanda-grid">
+      <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden text-center p-8">
+      <div class="text-4xl mb-4">&#128269;</div>
+      <h3 class="text-muted">कुनै छन्द फेला भएन</h3>
+      <p class="text-muted">फिल्टर परिवर्तन गर्नुहोस् वा खोज शब्द बदल्नुहोस्</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>छन्द कविता मार्गदर्शक &copy; 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script src="js/engine/chhanda-matcher.js"></script>
+  <script src="js/engine/mistake-detector.js"></script>
+  <script src="js/engine/transliterator.js"></script>
+  <script src="js/ui/language.js"></script>
+  <script src="js/ui/nav.js"></script>
+  <script src="js/ui/syllable-display.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script>
+    // Initialize
+    Nav.inject('catalog');
+    Language.applyTranslations();
+    populateFilters();
+    filterChhandas();
+
+    // Populate filter dropdowns
+    function populateFilters() {
+      // Syllable counts
+      const syllableCounts = ChhandasData.getUniqueSyllableCounts();
+      const syllableSelect = document.getElementById('filter-syllables');
+      syllableCounts.forEach(count => {
+        const option = document.createElement('option');
+        option.value = count;
+        option.textContent = `${count} अक्षर`;
+        syllableSelect.appendChild(option);
+      });
+
+      // Moods
+      const moods = ChhandasData.getUniqueMoods();
+      const moodSelect = document.getElementById('filter-mood');
+      moods.forEach(mood => {
+        const moodInfo = ChhandasData.getMood(mood);
+        const option = document.createElement('option');
+        option.value = mood;
+        option.textContent = moodInfo ? moodInfo.np : mood;
+        moodSelect.appendChild(option);
+      });
+    }
+
+    // Filter and display chhandas
+    function filterChhandas() {
+      const search = document.getElementById('search-input').value;
+      const syllables = document.getElementById('filter-syllables').value;
+      const mood = document.getElementById('filter-mood').value;
+      const difficulty = document.getElementById('filter-difficulty').value;
+      const sortBy = document.getElementById('sort-by').value;
+
+      let chhandas = ChhandasData.filter({
+        search,
+        syllablesPerPada: syllables ? parseInt(syllables) : null,
+        mood: mood || null,
+        difficulty: difficulty || null,
+      });
+
+      // Sort
+      chhandas = ChhandasData.sort(sortBy, sortBy === 'name' ? 'asc' : 'desc')
+        .filter(ch => chhandas.some(c => c.id === ch.id));
+
+      renderChhandas(chhandas);
+    }
+
+    // Render chhanda cards
+    function renderChhandas(chhandas) {
+      const grid = document.getElementById('chhanda-grid');
+      const emptyState = document.getElementById('empty-state');
+
+      if (chhandas.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = chhandas.map(ch => {
+        const pattern = ChhandasData.getSISIPattern(ch.id);
+        const difficultyInfo = ChhandasData.getDifficulty(ch.difficulty);
+        const previewSisi = pattern ? pattern.pattern.substring(0, 12) + (pattern.pattern.length > 12 ? '...' : '') : '';
+
+        return `
+          <div class="chhanda-card card card-interactive" onclick="viewDetail('${ch.id}')">
+            <div class="chhanda-card-header">
+              <h3 class="chhanda-name font-devanagari">${ch.name.np}</h3>
+              <span class="chhanda-name-en text-muted text-sm">${ch.name.en}</span>
+            </div>
+
+            <div class="chhanda-card-body">
+              <div class="chhanda-stats flex gap-4 mb-3">
+                <span class="badge badge-primary">${ch.syllablesPerPada} अक्षर</span>
+                <span class="badge ${difficultyInfo ? 'badge-' + difficultyInfo.color : 'badge-primary'}">
+                  ${difficultyInfo ? difficultyInfo.np : ch.difficulty}
+                </span>
+              </div>
+
+              ${previewSisi ? `
+                <div class="chhanda-preview font-mono text-sm text-muted mb-3">
+                  ${previewSisi}
+                </div>
+              ` : ''}
+
+              <div class="chhanda-moods flex flex-wrap gap-2">
+                ${ch.mood.slice(0, 3).map(m => {
+                  const moodInfo = ChhandasData.getMood(m);
+                  return `<span class="badge badge-secondary">${moodInfo ? moodInfo.np : m}</span>`;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // View chhanda detail
+    function viewDetail(id) {
+      window.location.href = `chhanda-detail.html?id=${id}`;
+    }
+  </script>
+</body>
+</html>
