@@ -1,0 +1,56 @@
+/* Examples Page Styles */
+
+.filter-bar {
+  padding: var(--space-4);
+  background: var(--color-bg-secondary);
+}
+
+.examples-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.example-card {
+  padding: var(--space-6);
+  transition: all var(--transition-fast);
+}
+
+.example-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.example-title {
+  margin-bottom: var(--space-1);
+}
+
+.example-text {
+  border-left: 3px solid var(--color-primary);
+}
+
+.analysis-line {
+  border-left: 3px solid var(--color-primary);
+  padding-left: var(--space-4);
+}
+
+.empty-state {
+  padding: var(--space-16) 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .example-header {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .filter-bar .flex {
+    flex-direction: column;
+  }
+
+  .filter-bar .form-group {
+    width: 100%;
+  }
+}

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>उदाहरणहरू | Examples</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/examples.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1>उदाहरण पुस्तकालय</h1>
+      <p>विश्लेषणसहितका प्रसिद्ध कविताहरू</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar card mb-6">
+      <div class="flex flex-wrap gap-4 items-center">
+        <div class="form-group mb-0 flex-1" style="min-width: 200px;">
+          <input type="text" id="search-input" class="form-input"
+            placeholder="कविता खोज्नुहोस्..." oninput="filterExamples()">
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="filter-chhanda" class="form-select" onchange="filterExamples()">
+            <option value="">सबै छन्द</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-0">
+          <select id="filter-period" class="form-select" onchange="filterExamples()">
+            <option value="">सबै कालखण्ड</option>
+            <option value="vedic">वैदिक</option>
+            <option value="classical">शास्त्रीय</option>
+            <option value="medieval">मध्यकालीन</option>
+            <option value="modern">आधुनिक</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Examples List -->
+    <div id="examples-list" class="examples-list">
+      <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden text-center p-8">
+      <div class="text-4xl mb-4">&#128214;</div>
+      <h3 class="text-muted">कुनै उदाहरण फेला भएन</h3>
+      <p class="text-muted">फिल्टर परिवर्तन गर्नुहोस् वा खोज शब्द बदल्नुहोस्</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>छन्द कविता मार्गदर्शक &copy; 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script src="js/engine/chhanda-matcher.js"></script>
+  <script src="js/engine/mistake-detector.js"></script>
+  <script src="js/engine/transliterator.js"></script>
+  <script src="js/ui/language.js"></script>
+  <script src="js/ui/nav.js"></script>
+  <script src="js/ui/syllable-display.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script>
+    // Initialize
+    Nav.inject('examples');
+    Language.applyTranslations();
+
+    // Example poems data
+    const examples = [
+      {
+        id: 1,
+        title: { en: 'Gayatri Mantra', np: 'गायत्री मन्त्र' },
+        author: { en: 'Vedic Tradition', np: 'वैदिक परम्परा' },
+        chhandaId: 'gayatri',
+        period: 'vedic',
+        text: 'तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्',
+        translation: {
+          en: 'We meditate on the glory of that being who has produced this universe; may He enlighten our minds.',
+          np: 'हामी त्यस सत्ताको महिमामा ध्यान गर्छौं जसले यो ब्रह्माण्ड सिर्जना गरेका छन्; उनले हाम्रो मनलाई प्रकाशित गरुन्।'
+        }
+      },
+      {
+        id: 2,
+        title: { en: 'Meghadūta (Opening)', np: 'मेघदूत (सुरुवात)' },
+        author: { en: 'Kālidāsa', np: 'कालिदास' },
+        chhandaId: 'mandakranta',
+        period: 'classical',
+        text: 'मेरो भवनम् अस्ति राम्यम् पर्वते यत्र विभ्राजते\nविपुलतरुलताकुञ्जो मध्ये कुसुमभास्वरः',
+        translation: {
+          en: 'In the beautiful city on the mountain, there is my home, radiant in the midst of dense groves of flowers.',
+          np: 'पहाडमा सुन्दर शहरमा मेरो घर छ, फूलका घना बगैंचाको बीचमा चम्किरहेको।'
+        }
+      },
+      {
+        id: 3,
+        title: { en: 'Narmada Stotram', np: 'नर्मदा स्तोत्रम्' },
+        author: { en: 'Traditional', np: 'परम्परागत' },
+        chhandaId: 'bhujangaprayata',
+        period: 'classical',
+        text: 'नमामि नर्मदे मातर् भक्तानां इष्टदायिनीम्\nया पावनी त्रिलोकस्य सर्वपापहरा परा',
+        translation: {
+          en: 'I bow to Mother Narmada, who fulfills the wishes of devotees, who purifies the three worlds and removes all sins.',
+          np: 'म नर्मदा आमालाई नमस्कार गर्छु, जसले भक्तहरूको इच्छा पूरा गर्छिन्, तीन लोकलाई पवित्र गर्छिन् र सबै पाप हटाउँछिन्।'
+        }
+      },
+      {
+        id: 4,
+        title: { en: 'Subhashita', np: 'सुभाषित' },
+        author: { en: 'Bhartrihari', np: 'भर्तृहरि' },
+        chhandaId: 'shardulavikridita',
+        period: 'classical',
+        text: 'विद्या नाम नरस्य रूपम् अधिकं प्रख्यातिम् आदात्यये\nयया कश्चित् विन्ध्यते विपुलां श्रीं प्राप्नोति विद्वान् भवेत्',
+        translation: {
+          en: 'Knowledge is the true form of a man, it gives him fame and reputation. Through it, even the humble becomes prosperous and wise.',
+          np: 'ज्ञान मानिसको वास्तविक रूप हो, यसले उनलाई ख्याति र प्रतिष्ठा दिन्छ। यसमार्फत, न्यून पनि समृद्ध र विद्वान बन्छ।'
+        }
+      }
+    ];
+
+    // State
+    let expandedId = null;
+
+    // Populate chhanda filter
+    function populateFilters() {
+      const select = document.getElementById('filter-chhanda');
+      const chhandas = ChhandasData.getAll();
+
+      chhandas.forEach(ch => {
+        const option = document.createElement('option');
+        option.value = ch.id;
+        option.textContent = `${ch.name.np} (${ch.name.en})`;
+        select.appendChild(option);
+      });
+    }
+
+    // Filter examples
+    function filterExamples() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const chhanda = document.getElementById('filter-chhanda').value;
+      const period = document.getElementById('filter-period').value;
+
+      let filtered = examples.filter(ex => {
+        const matchSearch = !search ||
+          ex.title.np.toLowerCase().includes(search) ||
+          ex.title.en.toLowerCase().includes(search) ||
+          ex.author.np.toLowerCase().includes(search) ||
+          ex.text.toLowerCase().includes(search);
+
+        const matchChhanda = !chhanda || ex.chhandaId === chhanda;
+        const matchPeriod = !period || ex.period === period;
+
+        return matchSearch && matchChhanda && matchPeriod;
+      });
+
+      renderExamples(filtered);
+    }
+
+    // Render examples
+    function renderExamples(examplesToShow) {
+      const container = document.getElementById('examples-list');
+      const emptyState = document.getElementById('empty-state');
+
+      if (examplesToShow.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = examplesToShow.map(ex => {
+        const chhanda = ChhandasData.getById(ex.chhandaId);
+        const isExpanded = expandedId === ex.id;
+
+        // Analyze the text
+        const lines = ex.text.split('\n');
+        const lineAnalyses = lines.map(line => {
+          const syllables = SyllableParser.parseSyllables(line.trim());
+          const classified = WeightClassifier.classifySyllables(syllables);
+          const sisi = SISIGenerator.generateSISI(classified);
+          return { line: line.trim(), syllables: classified, sisi };
+        });
+
+        return `
+          <div class="example-card card mb-6">
+            <!-- Header -->
+            <div class="example-header flex justify-between items-start mb-4">
+              <div>
+                <h3 class="example-title font-devanagari text-xl">${ex.title.np}</h3>
+                <p class="text-sm text-muted">${ex.title.en}</p>
+                <div class="flex gap-2 mt-2">
+                  <span class="badge badge-primary">${chhanda ? chhanda.name.np : ex.chhandaId}</span>
+                  <span class="badge badge-secondary">${ex.author.np}</span>
+                  <span class="badge badge-secondary">${ex.period}</span>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="toggleExpand(${ex.id})">
+                ${isExpanded ? 'संक्षिप्त' : 'विस्तार'}
+              </button>
+            </div>
+
+            <!-- Original Text -->
+            <div class="example-text font-devanagari text-lg mb-4 p-4" style="background: var(--color-gray-50); border-radius: var(--radius-md); line-height: 2;">
+              ${ex.text.split('\n').join('<br>')}
+            </div>
+
+            <!-- Translation -->
+            <div class="example-translation mb-4">
+              <h4 class="text-sm font-semibold mb-2">अनुवाद:</h4>
+              <p class="text-muted">${ex.translation.np}</p>
+            </div>
+
+            <!-- Expanded Analysis -->
+            ${isExpanded ? `
+              <div class="example-analysis mt-4">
+                <h4 class="text-sm font-semibold mb-3">अक्षर विश्लेषण:</h4>
+                ${lineAnalyses.map(la => `
+                  <div class="analysis-line mb-4 p-4" style="background: var(--color-gray-50); border-radius: var(--radius-md);">
+                    <div class="font-devanagari mb-2">${la.line}</div>
+                    <div class="mb-2">${SyllableDisplay.render(la.syllables, { showLabels: true })}</div>
+                    <div class="font-mono text-sm text-muted">SISI: ${la.sisi}</div>
+                  </div>
+                `).join('')}
+
+                <a href="checker.html?text=${encodeURIComponent(ex.text)}" class="btn btn-primary btn-sm mt-4">
+                  यस कवितालाई जाँचमा प्रयोग गर्नुहोस् &rarr;
+                </a>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Toggle expanded state
+    function toggleExpand(id) {
+      expandedId = expandedId === id ? null : id;
+      filterExamples();
+    }
+
+    // Initialize
+    populateFilters();
+    filterExamples();
+  </script>
+</body>
+</html>

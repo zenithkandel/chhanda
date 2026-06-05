@@ -1,0 +1,90 @@
+/* Learning Page Styles */
+
+.progress-section {
+  padding: var(--space-4);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.lesson-card {
+  padding: var(--space-6);
+  transition: all var(--transition-fast);
+}
+
+.lesson-card.completed {
+  opacity: 0.8;
+  border-left: 4px solid var(--color-success);
+}
+
+.lesson-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.lesson-title {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.lesson-arrow {
+  font-size: var(--text-2xl);
+}
+
+/* Lesson Modal */
+.lesson-text {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.lesson-example {
+  font-size: var(--text-base);
+}
+
+.lesson-list ul {
+  margin-bottom: var(--space-4);
+}
+
+.lesson-list li {
+  margin-bottom: var(--space-2);
+}
+
+.lesson-exercise .exercise-options {
+  max-width: 400px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .lesson-card .flex {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .lesson-icon {
+    margin: 0 auto;
+  }
+}

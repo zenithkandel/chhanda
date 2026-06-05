@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>छन्द विवरण | Chhanda Detail</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/detail.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div id="chhanda-detail">
+      <!-- Populated by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>छन्द कविता मार्गदर्शक &copy; 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script src="js/engine/chhanda-matcher.js"></script>
+  <script src="js/engine/mistake-detector.js"></script>
+  <script src="js/engine/transliterator.js"></script>
+  <script src="js/ui/language.js"></script>
+  <script src="js/ui/nav.js"></script>
+  <script src="js/ui/syllable-display.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script>
+    // Initialize
+    Nav.inject('catalog');
+    Language.applyTranslations();
+
+    // Get chhanda ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const chhandaId = urlParams.get('id');
+
+    if (chhandaId) {
+      loadChhandaDetail(chhandaId);
+    } else {
+      window.location.href = 'catalog.html';
+    }
+
+    function loadChhandaDetail(id) {
+      const chhanda = ChhandasData.getById(id);
+      if (!chhanda) {
+        Toast.error('छन्द फेला भएन');
+        window.location.href = 'catalog.html';
+        return;
+      }
+
+      const pattern = ChhandasData.getSISIPattern(id);
+      const ganaPattern = ChhandasData.getGanaPattern(id);
+      const difficultyInfo = ChhandasData.getDifficulty(chhanda.difficulty);
+
+      document.title = `${chhanda.name.np} | छन्द कविता मार्गदर्शक`;
+
+      const container = document.getElementById('chhanda-detail');
+
+      container.innerHTML = `
+        <!-- Back Button -->
+        <div class="mb-6">
+          <a href="catalog.html" class="btn btn-ghost">&larr; सूचीमा फर्कनुहोस्</a>
+        </div>
+
+        <!-- Header -->
+        <div class="chhanda-header mb-8">
+          <h1 class="chhanda-title font-devanagari">${chhanda.name.np}</h1>
+          <h2 class="chhanda-title-en text-muted">${chhanda.name.en}</h2>
+          <p class="chhanda-description mt-4">${chhanda.description.np}</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="chhanda-quick-stats card mb-6">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">प्रति पंक्ति अक्षर</span>
+              <span class="stat-value font-bold text-2xl">${chhanda.syllablesPerPada}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">कुल अक्षर</span>
+              <span class="stat-value font-bold text-2xl">${chhanda.totalSyllables}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">पंक्ति संख्या</span>
+              <span class="stat-value font-bold text-2xl">${chhanda.padas}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">ढाँचा</span>
+              <span class="stat-value font-bold text-2xl">${chhanda.pattern}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">कठिनाई</span>
+              <span class="stat-value">
+                <span class="badge ${difficultyInfo ? 'badge-' + difficultyInfo.color : 'badge-primary'}">
+                  ${difficultyInfo ? difficultyInfo.np : chhanda.difficulty}
+                </span>
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">लोकप्रियता</span>
+              <span class="stat-value font-bold text-2xl">${chhanda.popularity}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SISI Pattern -->
+        ${pattern ? `
+          <div class="card mb-6">
+            <h3 class="card-title mb-4">SISI ढाँचा</h3>
+            <div class="sisi-pattern-display">
+              <div class="sisi-code text-xl mb-4">
+                ${SISIGenerator.formatSISIForDisplay(pattern.pattern)}
+              </div>
+              <div class="text-sm text-muted">
+                प्रति पंक्ति: ${pattern.perPada} अक्षर | पंक्ति: ${pattern.padas}
+              </div>
+            </div>
+
+            <!-- Rhythm Visualization -->
+            <div class="mt-6">
+              <h4 class="text-sm font-semibold mb-3">लय दृश्य</h4>
+              ${SyllableDisplay.renderRhythm(pattern.pattern)}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Gana Pattern -->
+        ${ganaPattern ? `
+          <div class="card mb-6">
+            <h3 class="card-title mb-4">गण ढाँचा</h3>
+            <div class="gana-display font-devanagari text-lg">
+              ${ganaPattern}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Mood -->
+        <div class="card mb-6">
+          <h3 class="card-title mb-4">भाव / मूड</h3>
+          <div class="mood-tags flex flex-wrap gap-2">
+            ${chhanda.mood.map(m => {
+              const moodInfo = ChhandasData.getMood(m);
+              return `<span class="badge badge-primary">${moodInfo ? moodInfo.np : m}</span>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Historical Note -->
+        ${chhanda.historicalNote ? `
+          <div class="card mb-6">
+            <h3 class="card-title mb-4">ऐतिहासिक जानकारी</h3>
+            <p>${chhanda.historicalNote.np}</p>
+          </div>
+        ` : ''}
+
+        <!-- Famous Poets -->
+        ${chhanda.famousPoets && chhanda.famousPoets.length > 0 ? `
+          <div class="card mb-6">
+            <h3 class="card-title mb-4">प्रसिद्ध कविहरू</h3>
+            <div class="poet-tags flex flex-wrap gap-2">
+              ${chhanda.famousPoets.map(poet =>
+                `<span class="badge badge-secondary">${poet}</span>`
+              ).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Related Chhandas -->
+        ${chhanda.relatedChhandas && chhanda.relatedChhandas.length > 0 ? `
+          <div class="card mb-6">
+            <h3 class="card-title mb-4">सम्बन्धित छन्दहरू</h3>
+            <div class="related-chhandas flex flex-wrap gap-3">
+              ${chhanda.relatedChhandas.map(relatedId => {
+                const related = ChhandasData.getById(relatedId);
+                if (!related) return '';
+                return `
+                  <a href="chhanda-detail.html?id=${relatedId}" class="card card-interactive p-3" style="min-width: 150px;">
+                    <div class="font-devanagari font-bold">${related.name.np}</div>
+                    <div class="text-sm text-muted">${related.syllablesPerPada} अक्षर</div>
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Action Button -->
+        <div class="text-center mt-8">
+          <a href="checker.html?chhanda=${id}" class="btn btn-primary btn-lg">
+            यस छन्दमा कविता जाँच गर्नुहोस् &rarr;
+          </a>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

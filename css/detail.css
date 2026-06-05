@@ -1,0 +1,101 @@
+/* Chhanda Detail Page Styles */
+
+.chhanda-header {
+  text-align: center;
+  padding: var(--space-8) 0;
+}
+
+.chhanda-title {
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-2);
+}
+
+.chhanda-title-en {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-normal);
+}
+
+.chhanda-description {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Quick Stats */
+.chhanda-quick-stats .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-4);
+}
+
+.stat-item .stat-label {
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+/* SISI Pattern Display */
+.sisi-pattern-display {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+}
+
+/* Gana Display */
+.gana-display {
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  letter-spacing: 0.1em;
+}
+
+/* Mood Tags */
+.mood-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Poet Tags */
+.poet-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Related Chhandas */
+.related-chhandas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chhanda-title {
+    font-size: var(--text-3xl);
+  }
+
+  .chhanda-quick-stats .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .chhanda-quick-stats .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

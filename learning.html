@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>सिक्नुहोस् | Learning Center</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/learning.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <div id="nav-placeholder"></div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1 data-i18n="learning.title">सिक्ने केन्द्र</h1>
+      <p data-i18n="learning.subtitle">शास्त्रीय छन्दशास्त्रको कला सिक्नुहोस्</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Progress Bar -->
+    <div class="progress-section card mb-6">
+      <div class="flex justify-between items-center mb-2">
+        <span data-i18n="learning.progress">तपाईंको प्रगति</span>
+        <span id="progress-percent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Lesson List -->
+    <div id="lesson-list" class="lesson-list">
+      <!-- Populated by JavaScript -->
+    </div>
+
+    <!-- Lesson Content Modal -->
+    <div id="lesson-modal" class="modal-backdrop hidden">
+      <div class="modal" style="max-width: 800px;">
+        <div class="modal-header">
+          <h3 id="lesson-title"></h3>
+          <button class="btn btn-ghost" onclick="closeLesson()">&times;</button>
+        </div>
+        <div class="modal-body" id="lesson-content">
+          <!-- Populated by JavaScript -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeLesson()">बन्द गर्नुहोस्</button>
+          <button class="btn btn-primary" onclick="completeLesson()">पूरा भयो &check;</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>छन्द कविता मार्गदर्शक &copy; 2026</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script src="js/engine/chhanda-matcher.js"></script>
+  <script src="js/engine/mistake-detector.js"></script>
+  <script src="js/engine/transliterator.js"></script>
+  <script src="js/ui/language.js"></script>
+  <script src="js/ui/nav.js"></script>
+  <script src="js/ui/syllable-display.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script>
+    // Initialize
+    Nav.inject('learning');
+    Language.applyTranslations();
+
+    // Lessons data
+    const lessons = [
+      {
+        id: 1,
+        title: { en: 'What is a Syllable?', np: 'अक्षर के हो?' },
+        icon: '🔤',
+        difficulty: 'beginner',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'A syllable is a unit of pronunciation containing a vowel. Every word in Sanskrit and Nepali is made up of one or more syllables.',
+                np: 'अक्षर एउटा उच्चारण एकाइ हो जसमा स्वर हुन्छ। संस्कृत र नेपालीका प्रत्येक शब्द एक वा बढी अक्षरबाट बनेको हुन्छ।'
+              }
+            },
+            {
+              type: 'example',
+              content: {
+                en: 'Examples:',
+                np: 'उदाहरणहरू:',
+                words: [
+                  { word: 'मेरो', syllables: ['मे', 'रो'], count: 2 },
+                  { word: 'नाम', syllables: ['ना', 'म'], count: 2 },
+                  { word: 'कविता', syllables: ['क', 'वि', 'ता'], count: 3 },
+                  { word: 'विद्यालय', syllables: ['वि', 'द्या', 'ल', 'य'], count: 4 },
+                ]
+              }
+            },
+            {
+              type: 'text',
+              content: {
+                en: 'Without a vowel, a sound cannot form a complete syllable. For example, "क्" (ka with halant) is NOT a syllable because the vowel is removed.',
+                np: 'स्वर बिना, ध्वनिले पूर्ण अक्षर बन्न सक्दैन। उदाहरणका लागि, "क्" एउटा अक्षर होइन किनभने स्वर हटाइएको छ।'
+              }
+            },
+            {
+              type: 'exercise',
+              question: {
+                en: 'How many syllables are in "कविता"?',
+                np: '"कविता" मा कति अक्षर छन्?',
+                options: ['२', '३', '४', '५']
+              },
+              answer: 1
+            }
+          ]
+        }
+      },
+      {
+        id: 2,
+        title: { en: 'Guru and Laghu', np: 'गुरु र लघु' },
+        icon: '⚖️',
+        difficulty: 'beginner',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'In classical prosody, every syllable is classified as either Guru (Heavy/S) or Laghu (Light/I). This is the foundation of the entire system.',
+                np: 'शास्त्रीय छन्दशास्त्रमा, प्रत्येक अक्षरलाई गुरु (भारी/S) वा लघु (हलुका/I) मा वर्गीकरण गरिन्छ। यो सम्पूर्ण प्रणालीको आधार हो।'
+              }
+            },
+            {
+              type: 'table',
+              headers: {
+                en: ['Symbol', 'Name', 'Weight', 'Mātrā'],
+                np: ['चिन्ह', 'नाम', 'तौल', 'मात्रा']
+              },
+              rows: [
+                ['I', 'Laghu (लघु)', 'Light', '1'],
+                ['S', 'Guru (गुरु)', 'Heavy', '2']
+              ]
+            },
+            {
+              type: 'text',
+              content: {
+                en: 'Short vowels (अ, इ, उ, ऋ, ऌ) are naturally Laghu. Long vowels (आ, ई, ऊ, ए, ऐ, ओ, औ) are naturally Guru.',
+                np: 'ह्रस्व स्वरहरू (अ, इ, उ, ऋ, ऌ) प्राकृतिक रूपमा लघु हुन्छन्। दीर्घ स्वरहरू (आ, ई, ऊ, ए, ऐ, ओ, औ) प्राकृतिक रूपमा गुरु हुन्छन्।'
+              }
+            },
+            {
+              type: 'exercise',
+              question: {
+                en: 'What is the weight of "ना" (contains long ā)?',
+                np: '"ना" (दीर्घ आ भएको) को तौल के हो?',
+                options: ['Laghu (I)', 'Guru (S)', 'Both', 'Neither']
+              },
+              answer: 1
+            }
+          ]
+        }
+      },
+      {
+        id: 3,
+        title: { en: 'Classification Rules', np: 'निर्धारण नियमहरू' },
+        icon: '📏',
+        difficulty: 'beginner',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'A syllable becomes Guru in these cases:',
+                np: 'यी अवस्थाहरूमा अक्षर गुरु बन्छ:'
+              }
+            },
+            {
+              type: 'list',
+              items: {
+                en: [
+                  'Long vowel (आ, ई, ऊ, ए, ऐ, ओ, औ)',
+                  'Anusvāra (ं) - makes preceding syllable Guru',
+                  'Visarga (ः) - makes preceding syllable Guru',
+                  'Closed syllable (ends with halant ्)',
+                  'Conjunct consonants (e.g., क्त, त्र, ज्ञ)'
+                ],
+                np: [
+                  'दीर्घ स्वर (आ, ई, ऊ, ए, ऐ, ओ, औ)',
+                  'अनुस्वार (ं) - अघिल्लो अक्षर गुरु बनाउँछ',
+                  'विसर्ग (ः) - अघिल्लो अक्षर गुरु बनाउँछ',
+                  'बन्द अक्षर (हलन्त ् मा समाप्त)',
+                  'संयुक्त व्यञ्जन (जस्तै, क्त, त्र, ज्ञ)'
+                ]
+              }
+            },
+            {
+              type: 'example',
+              content: {
+                en: 'Example: "अन्त"',
+                np: 'उदाहरण: "अन्त"',
+                analysis: 'अ + न् + त → "अन्" is Guru because of halant'
+              }
+            }
+          ]
+        }
+      },
+      {
+        id: 4,
+        title: { en: 'The Gana System', np: 'गण प्रणाली' },
+        icon: '🔢',
+        difficulty: 'intermediate',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'Three syllables form one Gana. There are 8 possible ganas, memorized using the mnemonic: यमाताराजभानसलगा',
+                np: 'तीन अक्षरले एउटा गण बनाउँछन्। ८ सम्भावित गणहरू छन्, जसलाई याद गर्न: यमाताराजभानसलगा'
+              }
+            },
+            {
+              type: 'table',
+              headers: {
+                en: ['Gana', 'Pattern', 'Example'],
+                np: ['गण', 'ढाँचा', 'उदाहरण']
+              },
+              rows: [
+                ['य (Ya)', 'I-S-S', 'मनो'],
+                ['म (Ma)', 'S-S-S', 'सरस'],
+                ['त (Ta)', 'S-S-I', 'हिम'],
+                ['र (Ra)', 'S-I-S', 'भव'],
+                ['ज (Ja)', 'I-S-I', 'रज'],
+                ['भ (Bha)', 'S-I-I', 'नय'],
+                ['न (Na)', 'I-I-I', 'अन'],
+                ['स (Sa)', 'I-I-S', 'कम']
+              ]
+            }
+          ]
+        }
+      },
+      {
+        id: 5,
+        title: { en: 'SISI Codes', np: 'SISI कोड' },
+        icon: '💻',
+        difficulty: 'intermediate',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'SISI codes represent the Guru-Laghu pattern of a verse using S (Guru) and I (Laghu). This binary system allows us to mathematically analyze poetry.',
+                np: 'SISI कोडले श्लोकको गुरु-लघु ढाँचालाई S (गुरु) र I (लघु) प्रयोग गरेर प्रतिनिधित्व गर्छ। यो द्विआधारित प्रणालीले हामीलाई कविताको गणितीय विश्लेषण गर्न दिन्छ।'
+              }
+            },
+            {
+              type: 'example',
+              content: {
+                en: 'Example analysis:',
+                np: 'उदाहरण विश्लेषण:',
+                word: 'मेरो',
+                syllables: [
+                  { text: 'मे', weight: 'S', reason: 'Long vowel ए' },
+                  { text: 'रो', weight: 'S', reason: 'Long vowel ओ' }
+                ],
+                sisi: 'SS'
+              }
+            }
+          ]
+        }
+      },
+      {
+        id: 6,
+        title: { en: 'Understanding Chhandas', np: 'छन्द बुझ्ने' },
+        icon: '🎭',
+        difficulty: 'intermediate',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'A Chhanda (metre) defines a specific pattern of syllables per line. Each chhanda has a unique SISI template that poems should follow.',
+                np: 'छन्दले प्रति पंक्ति अक्षरको विशिष्ट ढाँचा परिभाषित गर्छ। प्रत्येक छन्दसँग एउटा अद्वितीय SISI टेम्प्लेट हुन्छ जुन कविताले पालना गर्नुपर्छ।'
+              }
+            },
+            {
+              type: 'list',
+              items: {
+                en: [
+                  'Gayatri: 8 syllables × 3 lines = 24 total',
+                  'Anushtubh: 8 syllables × 4 lines = 32 total',
+                  'Indravajra: 11 syllables × 4 lines = 44 total',
+                  'Mandākrāntā: 17 syllables × 4 lines = 68 total'
+                ],
+                np: [
+                  'गायत्री: ८ अक्षर × ३ पंक्ति = २४ कुल',
+                  'अनुष्टुप्: ८ अक्षर × ४ पंक्ति = ३२ कुल',
+                  'इन्द्रवज्रा: ११ अक्षर × ४ पंक्ति = ४४ कुल',
+                  'मन्दाक्रान्ता: १७ अक्षर × ४ पंक्ति = ६८ कुल'
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        id: 7,
+        title: { en: 'Using the Checker', np: 'जाँच प्रयोग गर्ने' },
+        icon: '🔍',
+        difficulty: 'beginner',
+        content: {
+          sections: [
+            {
+              type: 'text',
+              content: {
+                en: 'The Chhanda Checker is our main tool. Here\'s how to use it:',
+                np: 'छन्द जाँच हाम्रो मुख्य उपकरण हो। यसलाई कसरी प्रयोग गर्ने:'
+              }
+            },
+            {
+              type: 'list',
+              items: {
+                en: [
+                  'Step 1: Enter your Devanagari text in the input box',
+                  'Step 2: Click "Analyze" or wait for auto-analysis',
+                  'Step 3: View the syllable breakdown with color coding',
+                  'Step 4: See the generated SISI code',
+                  'Step 5: Check which chhanda matches (if any)',
+                  'Step 6: If a target is selected, see mistakes and corrections'
+                ],
+                np: [
+                  'चरण १: इनपुट बक्समा आफ्नो देवनागरी पाठ प्रविष्ट गर्नुहोस्',
+                  'चरण २: "विश्लेषण गर्नुहोस्" क्लिक गर्नुहोस् वा स्वतः विश्लेषणको लागि पर्खनुहोस्',
+                  'चरण ३: रंग कोडिङसहित अक्षर विभाजन हेर्नुहोस्',
+                  'चरण ४: उत्पन्न गरिएको SISI कोड हेर्नुहोस्',
+                  'चरण ५: कुन छन्द मिल्छ हेर्नुहोस् (यदि भए)',
+                  'चरण ६: लक्ष्य छानिएको छ भने, गल्तीहरू र सच्याइहरू हेर्नुहोस्'
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ];
+
+    // State
+    let completedLessons = JSON.parse(localStorage.getItem('chhanda-lessons') || '[]');
+    let currentLessonId = null;
+
+    // Render lessons
+    function renderLessons() {
+      const container = document.getElementById('lesson-list');
+      const t = Language.t;
+
+      container.innerHTML = lessons.map(lesson => {
+        const isCompleted = completedLessons.includes(lesson.id);
+        const statusIcon = isCompleted ? '✅' : lesson.icon;
+        const statusClass = isCompleted ? 'completed' : '';
+
+        return `
+          <div class="lesson-card card card-interactive ${statusClass}" onclick="openLesson(${lesson.id})">
+            <div class="flex items-center gap-4">
+              <div class="lesson-icon text-3xl">${statusIcon}</div>
+              <div class="flex-1">
+                <h3 class="lesson-title font-devanagari">${lesson.title.np}</h3>
+                <p class="text-sm text-muted">${lesson.title.en}</p>
+                <span class="badge badge-${lesson.difficulty === 'beginner' ? 'success' : lesson.difficulty === 'intermediate' ? 'warning' : 'danger'} mt-2">
+                  ${lesson.difficulty}
+                </span>
+              </div>
+              <div class="lesson-arrow text-muted">&rsaquo;</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateProgress();
+    }
+
+    // Update progress
+    function updateProgress() {
+      const percent = Math.round((completedLessons.length / lessons.length) * 100);
+      document.getElementById('progress-percent').textContent = `${percent}%`;
+      document.getElementById('progress-fill').style.width = `${percent}%`;
+    }
+
+    // Open lesson modal
+    function openLesson(id) {
+      currentLessonId = id;
+      const lesson = lessons.find(l => l.id === id);
+      if (!lesson) return;
+
+      document.getElementById('lesson-title').textContent = lesson.title.np;
+
+      const content = renderLessonContent(lesson.content);
+      document.getElementById('lesson-content').innerHTML = content;
+
+      document.getElementById('lesson-modal').classList.remove('hidden');
+    }
+
+    // Render lesson content
+    function renderLessonContent(content) {
+      let html = '';
+
+      content.sections.forEach(section => {
+        switch (section.type) {
+          case 'text':
+            html += `<div class="lesson-text mb-4">${section.content.np}</div>`;
+            break;
+
+          case 'example':
+            html += `<div class="lesson-example p-4 mb-4" style="background: var(--color-gray-50); border-radius: var(--radius-md);">`;
+            html += `<div class="font-semibold mb-2">${section.content.np || section.content.en}</div>`;
+            if (section.content.words) {
+              section.content.words.forEach(w => {
+                html += `
+                  <div class="mb-2">
+                    <span class="font-devanagari text-lg">${w.word}</span>
+                    <span class="text-muted ml-2">(${w.count} अक्षर: ${w.syllables.join(' + ')})</span>
+                  </div>
+                `;
+              });
+            }
+            if (section.content.syllables) {
+              html += `<div class="font-devanagari text-lg">${section.content.word}</div>`;
+              html += `<div class="mt-2">${SyllableDisplay.render(section.content.syllables)}</div>`;
+              html += `<div class="mt-2 font-mono">SISI: ${section.content.sisi}</div>`;
+            }
+            if (section.content.analysis) {
+              html += `<div class="text-sm text-muted mt-2">${section.content.analysis}</div>`;
+            }
+            html += `</div>`;
+            break;
+
+          case 'table':
+            html += `<div class="lesson-table overflow-auto mb-4">`;
+            html += `<table style="width: 100%; border-collapse: collapse;">`;
+            html += `<thead><tr>`;
+            section.headers.np.forEach(h => {
+              html += `<th style="padding: 8px; border: 1px solid var(--color-border); text-align: left;">${h}</th>`;
+            });
+            html += `</tr></thead>`;
+            html += `<tbody>`;
+            section.rows.forEach(row => {
+              html += `<tr>`;
+              row.forEach(cell => {
+                html += `<td style="padding: 8px; border: 1px solid var(--color-border);">${cell}</td>`;
+              });
+              html += `</tr>`;
+            });
+            html += `</tbody></table></div>`;
+            break;
+
+          case 'list':
+            html += `<ul class="lesson-list mb-4" style="list-style: disc; padding-left: 20px;">`;
+            section.items.np.forEach(item => {
+              html += `<li class="mb-2">${item}</li>`;
+            });
+            html += `</ul>`;
+            break;
+
+          case 'exercise':
+            html += `
+              <div class="lesson-exercise p-4 mb-4" style="background: var(--color-primary-50); border-radius: var(--radius-md); border: 2px solid var(--color-primary);">
+                <div class="font-semibold mb-3">${section.question.np}</div>
+                <div class="exercise-options flex flex-col gap-2">
+            `;
+            section.question.options.forEach((opt, i) => {
+              html += `
+                <button class="btn btn-secondary text-left" onclick="checkAnswer(${i}, ${section.answer}, this)">
+                  ${opt}
+                </button>
+              `;
+            });
+            html += `</div></div>`;
+            break;
+        }
+      });
+
+      return html;
+    }
+
+    // Check exercise answer
+    function checkAnswer(selected, correct, btn) {
+      const buttons = btn.parentElement.querySelectorAll('.btn');
+      buttons.forEach((b, i) => {
+        if (i === correct) {
+          b.classList.remove('btn-secondary');
+          b.classList.add('btn-primary');
+        } else if (i === selected && selected !== correct) {
+          b.classList.remove('btn-secondary');
+          b.classList.add('btn-danger');
+        }
+        b.disabled = true;
+      });
+
+      if (selected === correct) {
+        Toast.success('सही उत्तर!');
+      } else {
+        Toast.error('गलत उत्तर। सही उत्तर नीलो रंगमा देखिन्छ।');
+      }
+    }
+
+    // Close lesson modal
+    function closeLesson() {
+      document.getElementById('lesson-modal').classList.add('hidden');
+      currentLessonId = null;
+    }
+
+    // Complete current lesson
+    function completeLesson() {
+      if (currentLessonId && !completedLessons.includes(currentLessonId)) {
+        completedLessons.push(currentLessonId);
+        localStorage.setItem('chhanda-lessons', JSON.stringify(completedLessons));
+        Toast.success('पाठ पूरा भयो!');
+        renderLessons();
+      }
+      closeLesson();
+    }
+
+    // Initialize
+    renderLessons();
+  </script>
+</body>
+</html>
