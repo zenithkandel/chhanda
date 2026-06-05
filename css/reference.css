@@ -1,0 +1,97 @@
+/* Reference Page Styles */
+
+.ref-content {
+  padding: var(--space-4) 0;
+}
+
+.ref-content.hidden {
+  display: none;
+}
+
+/* Vowel Tags */
+.vowel-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  border-radius: var(--radius-md);
+  font-family: var(--font-devanagari);
+}
+
+.vowel-tag.laghu {
+  background: var(--color-laghu-bg);
+  color: var(--color-laghu);
+  border: 2px solid var(--color-laghu);
+}
+
+.vowel-tag.guru {
+  background: var(--color-guru-bg);
+  color: var(--color-guru);
+  border: 2px solid var(--color-guru);
+}
+
+/* Example Tags */
+.example-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  border-radius: var(--radius-md);
+  font-family: var(--font-devanagari);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-border);
+}
+
+.example-tag.guru {
+  background: var(--color-guru-bg);
+  border-color: var(--color-guru);
+  color: var(--color-guru);
+}
+
+/* Table Responsive */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Meru Display */
+.meru-display {
+  font-size: var(--text-sm);
+}
+
+.meru-row {
+  white-space: nowrap;
+}
+
+.meru-cell {
+  transition: all var(--transition-fast);
+}
+
+.meru-cell:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vowel-tag {
+    width: 40px;
+    height: 40px;
+    font-size: var(--text-lg);
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    white-space: nowrap;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+}
