@@ -1,0 +1,379 @@
+{
+  "chhandas": [
+    {
+      "id": "gayatri",
+      "name": {
+        "en": "Gayatri",
+        "np": "गायत्री"
+      },
+      "description": {
+        "en": "Sacred, luminous, meditative metre. The Gayatri Mantra is composed in this metre.",
+        "np": "पवित्र, दीप्त, ध्यानात्मक छन्द। गायत्री मन्त्र यस छन्दमा रचित छ।"
+      },
+      "syllablesPerPada": 8,
+      "totalSyllables": 24,
+      "padas": 3,
+      "pattern": "8+8+8",
+      "ganas": ["ययट्", "ययट्", "ययट्"],
+      "mood": ["sacred", "luminous", "meditative"],
+      "difficulty": "beginner",
+      "popularity": 95,
+      "relatedChhandas": ["anushtubh"],
+      "famousPoets": ["Vedic Sages"],
+      "historicalNote": {
+        "en": "One of the oldest and most sacred metres in Vedic literature.",
+        "np": "वैदिक साहित्यमा सबैभन्दा पुरानो र पवित्र छन्दहरू मध्ये एक।"
+      }
+    },
+    {
+      "id": "anushtubh",
+      "name": {
+        "en": "Anushtubh",
+        "np": "अनुष्टुप्"
+      },
+      "description": {
+        "en": "The most common metre in Sanskrit. Most verses of the Mahabharata and Bhagavad Gita use Anushtubh.",
+        "np": "संस्कृतमा सबैभन्दा सामान्य छन्द। महाभारत र भगवद्गीताका अधिकांश श्लोकहरू अनुष्टुप्मा छन्।"
+      },
+      "syllablesPerPada": 8,
+      "totalSyllables": 32,
+      "padas": 4,
+      "pattern": "8+8+8+8",
+      "ganas": ["ययट्", "ययट्", "ययट्", "ययट्"],
+      "mood": ["narrative", "conversational", "universal"],
+      "difficulty": "beginner",
+      "popularity": 98,
+      "relatedChhandas": ["gayatri"],
+      "famousPoets": ["Vyasa", "Valmiki"],
+      "historicalNote": {
+        "en": "The backbone of classical Sanskrit epic poetry.",
+        "np": "शास्त्रीय संस्कृत महाकाव्य कविताको मेरुदण्ड।"
+      }
+    },
+    {
+      "id": "indravajra",
+      "name": {
+        "en": "Indravajra",
+        "np": "इन्द्रवज्रा"
+      },
+      "description": {
+        "en": "One of the foundational 11-syllable vṛttas. Heroic, strong, and dynamic.",
+        "np": "११-अक्षर वृत्त्यहरूमध्ये एक आधारभूत छन्द। वीरत्वपूर्ण, बलियो र गतिशील।"
+      },
+      "syllablesPerPada": 11,
+      "totalSyllables": 44,
+      "padas": 4,
+      "pattern": "11+11+11+11",
+      "ganas": ["र", "भ", "न", "य"],
+      "mood": ["heroic", "strong", "dynamic"],
+      "difficulty": "intermediate",
+      "popularity": 80,
+      "relatedChhandas": ["upendravajra", "upajati"],
+      "famousPoets": ["Kalidasa", "Bharavi"],
+      "historicalNote": {
+        "en": "Often combined with Upendravajra to form Upajāti.",
+        "np": "प्रायः उपेन्द्रवज्रासँग मिलाएर उपजाति बनाइन्छ।"
+      }
+    },
+    {
+      "id": "upendravajra",
+      "name": {
+        "en": "Upendravajra",
+        "np": "उपेन्द्रवज्रा"
+      },
+      "description": {
+        "en": "Companion metre to Indravajrā. Elegant, flowing, and noble.",
+        "np": "इन्द्रवज्राको साथी छन्द। सुन्दर, प्रवाहित र प्रतिष्ठित।"
+      },
+      "syllablesPerPada": 11,
+      "totalSyllables": 44,
+      "padas": 4,
+      "pattern": "11+11+11+11",
+      "ganas": ["न", "र", "भ", "य"],
+      "mood": ["elegant", "flowing", "noble"],
+      "difficulty": "intermediate",
+      "popularity": 78,
+      "relatedChhandas": ["indravajra", "upajati"],
+      "famousPoets": ["Kalidasa", "Shriharsha"],
+      "historicalNote": {
+        "en": "Frequently combined with Indravajrā to create the beloved Upajāti metre.",
+        "np": "प्रिय उपजाति छन्द बनाउन प्रायः इन्द्रवज्रासँग जोडिन्छ।"
+      }
+    },
+    {
+      "id": "upajati",
+      "name": {
+        "en": "Upajāti",
+        "np": "उपजाति"
+      },
+      "description": {
+        "en": "One of the most beloved classical metres. A combination of Indravajrā and Upendravajrā. Philosophical, grand, and balanced.",
+        "np": "सबैभन्दा प्रिय शास्त्रीय छन्दहरू मध्ये एक। इन्द्रवज्रा र उपेन्द्रवज्राको संयोजन। दार्शनिक, भव्य र सन्तुलित।"
+      },
+      "syllablesPerPada": 11,
+      "totalSyllables": 44,
+      "padas": 4,
+      "pattern": "11+11+11+11",
+      "ganas": ["mixed"],
+      "mood": ["philosophical", "grand", "balanced"],
+      "difficulty": "intermediate",
+      "popularity": 88,
+      "relatedChhandas": ["indravajra", "upendravajra"],
+      "famousPoets": ["Kalidasa", "Banabhatta"],
+      "historicalNote": {
+        "en": "Often used by Kalidasa in his masterpieces. Considered the most versatile classical metre.",
+        "np": "कालिदासले आफ्ना कृतिहरूमा प्रायः प्रयोग गरेका। सबैभन्दा बहुमुखी शास्त्रीय छन्द मानिन्छ।"
+      }
+    },
+    {
+      "id": "bhujangaprayata",
+      "name": {
+        "en": "Bhujanga-prayāta",
+        "np": "भुजङ्गप्रयात"
+      },
+      "description": {
+        "en": "12-syllable metre resembling the movement of a serpent. Devotional, flowing, and musical.",
+        "np": "१२-अक्षर छन्द जुन सर्पको गतिजस्तो देखिन्छ। भक्तिपूर्ण, प्रवाहित र संगीतमय।"
+      },
+      "syllablesPerPada": 12,
+      "totalSyllables": 48,
+      "padas": 4,
+      "pattern": "12+12+12+12",
+      "ganas": ["य", "य", "य", "य"],
+      "mood": ["devotional", "flowing", "musical"],
+      "difficulty": "intermediate",
+      "popularity": 75,
+      "relatedChhandas": ["totaka", "vamshastha"],
+      "famousPoets": ["Bilvana", "Sankaracharya"],
+      "historicalNote": {
+        "en": "Named after the serpent (bhujanga) due to its undulating rhythm.",
+        "np": "यसको लहरिलो लयका कारण सर्प (भुजङ्ग) को नाममा नामाकरण गरिएको।"
+      }
+    },
+    {
+      "id": "totaka",
+      "name": {
+        "en": "Toṭaka",
+        "np": "तोटक"
+      },
+      "description": {
+        "en": "12-syllable metre with a powerful, rhythmic pattern. Energetic, rhythmic, and chant-like.",
+        "np": "१२-अक्षर छन्द जसमा शक्तिशाली, लयबद्ध ढाँचा छ। ऊर्जावान, लयबद्ध र मन्त्रजस्तो।"
+      },
+      "syllablesPerPada": 12,
+      "totalSyllables": 48,
+      "padas": 4,
+      "pattern": "12+12+12+12",
+      "ganas": ["स", "स", "स", "स"],
+      "mood": ["energetic", "rhythmic", "chant-like"],
+      "difficulty": "intermediate",
+      "popularity": 72,
+      "relatedChhandas": ["bhujangaprayata", "vamshastha"],
+      "famousPoets": ["Sankaracharya"],
+      "historicalNote": {
+        "en": "Famous example is the Totakāṣṭakam by Adi Shankaracharya.",
+        "np": "आदि शंकराचार्यको तोटकाष्टकम् यस छन्दको प्रसिद्ध उदाहरण हो।"
+      }
+    },
+    {
+      "id": "vamshastha",
+      "name": {
+        "en": "Vaṃśastha",
+        "np": "वंशस्थ"
+      },
+      "description": {
+        "en": "12-syllable metre popular in classical Sanskrit poetry. Balanced and narrative.",
+        "np": "१२-अक्षर छन्द जो शास्त्रीय संस्कृत कवितामा लोकप्रिय छ। सन्तुलित र वर्णनात्मक।"
+      },
+      "syllablesPerPada": 12,
+      "totalSyllables": 48,
+      "padas": 4,
+      "pattern": "12+12+12+12",
+      "ganas": ["न", "स", "र", "भ"],
+      "mood": ["balanced", "narrative"],
+      "difficulty": "intermediate",
+      "popularity": 70,
+      "relatedChhandas": ["bhujangaprayata", "totaka"],
+      "famousPoets": ["Magha", "Sri Harsha"],
+      "historicalNote": {
+        "en": "Popular in classical Sanskrit kavya literature.",
+        "np": "शास्त्रीय संस्कृत काव्य साहित्यमा लोकप्रिय।"
+      }
+    },
+    {
+      "id": "vasantatilaka",
+      "name": {
+        "en": "Vasantatilakā",
+        "np": "वसन्ततिलका"
+      },
+      "description": {
+        "en": "14-syllable metre meaning 'Ornament of Spring'. One of the most elegant Sanskrit metres.",
+        "np": "१४-अक्षर छन्द जसको अर्थ 'बसन्तको आभूषण'। सबैभन्दा सुन्दर संस्कृत छन्दहरू मध्ये एक।"
+      },
+      "syllablesPerPada": 14,
+      "totalSyllables": 56,
+      "padas": 4,
+      "pattern": "14+14+14+14",
+      "ganas": ["य", "न", "त", "र"],
+      "mood": ["romantic", "refined", "beautiful"],
+      "difficulty": "advanced",
+      "popularity": 82,
+      "relatedChhandas": ["malini"],
+      "famousPoets": ["Kalidasa", "Bhavabhuti"],
+      "historicalNote": {
+        "en": "Named for its beauty and association with spring-like elegance.",
+        "np": "यसको सुन्दरता र बसन्तजस्तो सुन्दरताका कारण नामाकरण गरिएको।"
+      }
+    },
+    {
+      "id": "malini",
+      "name": {
+        "en": "Mālinī",
+        "np": "मालिनी"
+      },
+      "description": {
+        "en": "15-syllable metre meaning 'Garlanded'. Widely used in devotional poetry.",
+        "np": "१५-अक्षर छन्द जसको अर्थ 'मालाले सिक्त'। भक्ति कवितामा व्यापक रूपमा प्रयोग हुन्छ।"
+      },
+      "syllablesPerPada": 15,
+      "totalSyllables": 60,
+      "padas": 4,
+      "pattern": "15+15+15+15",
+      "ganas": ["ज", "र", "भ", "न"],
+      "mood": ["graceful", "devotional"],
+      "difficulty": "advanced",
+      "popularity": 76,
+      "relatedChhandas": ["vasantatilaka", "panchachamara"],
+      "famousPoets": ["Kalidasa", "Vidyapati"],
+      "historicalNote": {
+        "en": "Often used for devotional and romantic poetry.",
+        "np": "प्रायः भक्ति र प्रेम कविताका लागि प्रयोग गरिन्छ।"
+      }
+    },
+    {
+      "id": "panchachamara",
+      "name": {
+        "en": "Pañcacāmara",
+        "np": "पञ्चचामर"
+      },
+      "description": {
+        "en": "16-syllable metre with a royal and ceremonial feel. Majestic and grand.",
+        "np": "१६-अक्षर छन्द जसमा राजसी र औपचारिक भाव छ। भव्य र गरिमापूर्ण।"
+      },
+      "syllablesPerPada": 16,
+      "totalSyllables": 64,
+      "padas": 4,
+      "pattern": "16+16+16+16",
+      "ganas": ["ज", "र", "ज", "र", "ज", "ग"],
+      "mood": ["royal", "ceremonial", "majestic"],
+      "difficulty": "advanced",
+      "popularity": 68,
+      "relatedChhandas": ["malini", "shikhari"],
+      "famousPoets": ["Magha", "Rajashekhara"],
+      "historicalNote": {
+        "en": "Often used for royal panegyrics and ceremonial poetry.",
+        "np": "प्रायः राजसी प्रशंसा र औपचारिक कविताका लागि प्रयोग गरिन्छ।"
+      }
+    },
+    {
+      "id": "shikhari",
+      "name": {
+        "en": "Śikhariṇī",
+        "np": "शिखरिणी"
+      },
+      "description": {
+        "en": "17-syllable metre meaning 'Mountain Peak'. One of the most respected high-class metres.",
+        "np": "१७-अक्षर छन्द जसको अर्थ 'शिखर'। सबैभन्दा सम्मानित उच्च-वर्गका छन्दहरू मध्ये एक।"
+      },
+      "syllablesPerPada": 17,
+      "totalSyllables": 68,
+      "padas": 4,
+      "pattern": "17+17+17+17",
+      "ganas": ["म", "स", "ज", "स", "त", "त"],
+      "mood": ["elevated", "noble", "grand"],
+      "difficulty": "advanced",
+      "popularity": 74,
+      "relatedChhandas": ["mandakranta"],
+      "famousPoets": ["Kalidasa", "Bharavi"],
+      "historicalNote": {
+        "en": "Considered one of the most prestigious metres in classical Sanskrit.",
+        "np": "शास्त्रीय संस्कृतमा सबैभन्दा प्रतिष्ठित छन्दहरू मध्ये एक मानिन्छ।"
+      }
+    },
+    {
+      "id": "mandakranta",
+      "name": {
+        "en": "Mandākrāntā",
+        "np": "मन्दाक्रान्ता"
+      },
+      "description": {
+        "en": "17-syllable metre meaning 'Slow-stepping'. Many scholars consider this the most beautiful Sanskrit metre. Used in Meghadūta by Kālidāsa.",
+        "np": "१७-अक्षर छन्द जसको अर्थ 'हिलो चाल'। धेरै विद्वानहरू यसलाई सबैभन्दा सुन्दर संस्कृत छन्द मान्छन्। कालिदासको मेघदूतमा प्रयोग गरिएको।"
+      },
+      "syllablesPerPada": 17,
+      "totalSyllables": 68,
+      "padas": 4,
+      "pattern": "17+17+17+17",
+      "ganas": ["म", "न", "द", "क्रा", "न्ता"],
+      "mood": ["longing", "separation", "beauty", "romance"],
+      "difficulty": "advanced",
+      "popularity": 92,
+      "relatedChhandas": ["shikhari"],
+      "famousPoets": ["Kalidasa", "Rajashekhara"],
+      "historicalNote": {
+        "en": "The Meghadūta of Kālidāsa is the most famous work in this metre.",
+        "np": "कालिदासको मेघदूत यस छन्दमा लिखित सबैभन्दा प्रसिद्ध कृति हो।"
+      }
+    },
+    {
+      "id": "shardulavikridita",
+      "name": {
+        "en": "Śārdūlavikrīḍita",
+        "np": "शार्दूलविक्रीडित"
+      },
+      "description": {
+        "en": "19-syllable metre meaning 'The Play of the Tiger'. Heroic, majestic, philosophical, and powerful. The rhythm feels like a tiger moving with controlled strength.",
+        "np": "१९-अक्षर छन्द जसको अर्थ 'बाघको खेल'। वीरत्वपूर्ण, भव्य, दार्शनिक र शक्तिशाली। लय नियन्त्रित बलमा हिँड्ने बाघजस्तो महसुस हुन्छ।"
+      },
+      "syllablesPerPada": 19,
+      "totalSyllables": 76,
+      "padas": 4,
+      "pattern": "19+19+19+19",
+      "ganas": ["म", "स", "ज", "स", "त", "त", "ग"],
+      "mood": ["heroic", "majestic", "philosophical", "powerful"],
+      "difficulty": "advanced",
+      "popularity": 85,
+      "relatedChhandas": ["sragdhara", "mandakranta"],
+      "famousPoets": ["Kalidasa", "Bharavi", "Magha"],
+      "historicalNote": {
+        "en": "One of the most celebrated high-class metres. The name evokes the controlled power of a tiger.",
+        "np": "सबैभन्दा प्रशंसित उच्च-वर्गका छन्दहरू मध्ये एक। नामले नियन्त्रित बाघको शक्तिलाई सम्झाउँछ।"
+      }
+    },
+    {
+      "id": "sragdhara",
+      "name": {
+        "en": "Sragdharā",
+        "np": "स्रग्धरा"
+      },
+      "description": {
+        "en": "21-syllable metre meaning 'Bearer of a Garland'. One of the longest commonly used classical metres. Epic, expansive, and magnificent.",
+        "np": "२१-अक्षर छन्द जसको अर्थ 'मालाको वाहक'। सबैभन्दा लामो सामान्य शास्त्रीय छन्दहरू मध्ये एक। महाकाव्यात्मक, विस्तृत र भव्य।"
+      },
+      "syllablesPerPada": 21,
+      "totalSyllables": 84,
+      "padas": 4,
+      "pattern": "21+21+21+21",
+      "ganas": ["म", "र", "भ", "न", "य", "य", "य"],
+      "mood": ["epic", "expansive", "magnificent"],
+      "difficulty": "advanced",
+      "popularity": 70,
+      "relatedChhandas": ["shardulavikridita"],
+      "famousPoets": ["Kalidasa", "Bharavi"],
+      "historicalNote": {
+        "en": "One of the longest commonly used classical metres in Sanskrit literature.",
+        "np": "संस्कृत साहित्यमा सबैभन्दा लामो सामान्य शास्त्रीय छन्दहरू मध्ये एक।"
+      }
+    }
+  ]
+}
