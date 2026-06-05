@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parser Test</title>
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    body { padding: 20px; font-family: var(--font-devanagari); }
+    .test-case { margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 8px; }
+    .syllable { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 4px; }
+    .guru { background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }
+    .laghu { background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; }
+    .result { margin-top: 10px; font-weight: bold; }
+    .pass { color: #16a34a; }
+    .fail { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <h1>Syllable Parser Test</h1>
+  
+  <div id="tests"></div>
+
+  <script src="js/utils/devanagari-utils.js"></script>
+  <script src="js/engine/syllable-parser.js"></script>
+  <script src="js/engine/weight-classifier.js"></script>
+  <script src="js/engine/sisi-generator.js"></script>
+  <script src="js/data/chhandas.js"></script>
+  <script>
+    const tests = [
+      {
+        name: "दिन् (should be ONE syllable)",
+        input: "दिन्",
+        expectedSyllables: ["दिन्"],
+        expectedSISI: ["S"]
+      },
+      {
+        name: "एक् (should be ONE syllable)",
+        input: "एक्",
+        expectedSyllables: ["एक्"],
+        expectedSISI: ["S"]
+      },
+      {
+        name: "नारद (should be 3 syllables)",
+        input: "नारद",
+        expectedSyllables: ["ना", "र", "द"],
+        expectedSISI: ["S", "I", "I"]
+      },
+      {
+        name: "सत्य (should be 2 syllables)",
+        input: "सत्य",
+        expectedSyllables: ["सत्", "य"],
+        expectedSISI: ["S", "I"]
+      },
+      {
+        name: "लोको (should be 2 syllables)",
+        input: "लोको",
+        expectedSyllables: ["लो", "को"],
+        expectedSISI: ["S", "S"]
+      },
+      {
+        name: "गरूँ (should be ONE syllable)",
+        input: "गरूँ",
+        expectedSyllables: ["गरूँ"],
+        expectedSISI: ["S"]
+      },
+      {
+        name: "ब्रह्मा (should be 2 syllables)",
+        input: "ब्रह्मा",
+        expectedSyllables: ["ब्र", "ह्मा"],
+        expectedSISI: ["S", "S"]
+      },
+      {
+        name: "Full line: एक् दिन् नारद",
+        input: "एक् दिन् नारद",
+        expectedSyllables: ["एक्", "दिन्", "ना", "र", "द"],
+        expectedSISI: ["S", "S", "S", "I", "I"]
+      }
+    ];
+
+    const container = document.getElementById('tests');
+    let passed = 0;
+    let failed = 0;
+
+    tests.forEach(test => {
+      const result = SyllableParser.parseSyllables(test.input);
+      const classified = WeightClassifier.classifySyllables(result);
+      const sisi = SISIGenerator.generateSISI(classified);
+      
+      const syllableTexts = result.map(s => s.text);
+      const sisiChars = classified.map(s => s.weight);
+      
+      const syllableMatch = JSON.stringify(syllableTexts) === JSON.stringify(test.expectedSyllables);
+      const sisiMatch = JSON.stringify(sisiChars) === JSON.stringify(test.expectedSISI);
+      const allMatch = syllableMatch && sisiMatch;
+      
+      if (allMatch) passed++;
+      else failed++;
+
+      let html = `
+        <div class="test-case">
+          <h3>${test.name}</h3>
+          <div><strong>Input:</strong> <span class="font-devanagari">${test.input}</span></div>
+          <div><strong>Got syllables:</strong> ${syllableTexts.map(s => `<span class="syllable">${s}</span>`).join(' ')}</div>
+          <div><strong>Expected:</strong> ${test.expectedSyllables.map(s => `<span class="syllable">${s}</span>`).join(' ')}</div>
+          <div><strong>SISI:</strong> ${sisiChars.map((s, i) => `<span class="syllable ${s === 'S' ? 'guru' : 'laghu'}">${s}</span>`).join(' ')}</div>
+          <div><strong>Expected SISI:</strong> ${test.expectedSISI.map((s, i) => `<span class="syllable ${s === 'S' ? 'guru' : 'laghu'}">${s}</span>`).join(' ')}</div>
+          <div class="result ${allMatch ? 'pass' : 'fail'}">${allMatch ? '✓ PASS' : '✗ FAIL'}</div>
+        </div>
+      `;
+      
+      container.innerHTML += html;
+    });
+
+    container.innerHTML += `
+      <div class="test-case" style="background: ${failed === 0 ? '#dcfce7' : '#fee2e2'};">
+        <h2>Results: ${passed} passed, ${failed} failed</h2>
+      </div>
+    `;
+  </script>
+</body>
+</html>

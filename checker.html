@@ -111,9 +111,9 @@
           <div id="mistakes-display"></div>
         </div>
 
-        <!-- Corrections -->
+        <!-- Deviations -->
         <div class="card mb-6" id="corrections-card" style="display: none;">
-          <h3 class="card-title" data-i18n="checker.corrections">सुझाइएका सच्याइहरू</h3>
+          <h3 class="card-title" data-i18n="checker.corrections">भिन्नताहरूको विवरण</h3>
           <div id="corrections-display"></div>
         </div>
 
@@ -366,20 +366,20 @@
 
       const mistakes = MistakeDetector.detectMistakes(linesWithClassified, targetChhanda);
       const report = MistakeDetector.generateReport(mistakes);
-      const corrections = MistakeDetector.getCorrectionsByLine(mistakes);
+      const deviations = MistakeDetector.getDeviationsByLine(mistakes);
 
       // Show/hide cards
       const mistakesCard = document.getElementById('mistakes-card');
-      const correctionsCard = document.getElementById('corrections-card');
+      const deviationsCard = document.getElementById('corrections-card');
 
       if (mistakes.length > 0) {
         mistakesCard.style.display = 'block';
-        correctionsCard.style.display = 'block';
+        deviationsCard.style.display = 'block';
         renderMistakes(mistakes, report);
-        renderCorrections(corrections);
+        renderDeviations(deviations);
       } else {
         mistakesCard.style.display = 'none';
-        correctionsCard.style.display = 'none';
+        deviationsCard.style.display = 'none';
         Toast.success('कविता छन्द अनुसार छ!');
       }
     }
@@ -424,30 +424,30 @@
       container.innerHTML = html;
     }
 
-    // Render corrections
-    function renderCorrections(corrections) {
+    // Render deviations (detailed view)
+    function renderDeviations(deviations) {
       const container = document.getElementById('corrections-display');
 
       let html = '';
 
-      corrections.forEach(correction => {
+      deviations.forEach(dev => {
         html += `
           <div class="mb-4 p-4" style="background: var(--color-gray-50); border-radius: var(--radius-md);">
-            <h4 class="text-sm font-semibold mb-3">पंक्ति ${correction.lineIndex + 1}</h4>
-            <div class="corrections-list">
+            <h4 class="text-sm font-semibold mb-3">पंक्ति ${dev.lineIndex + 1}</h4>
+            <div class="deviations-list">
         `;
 
-        correction.corrections.forEach(c => {
+        dev.deviations.forEach(d => {
+          const expectedLabel = d.expected === 'S' ? 'गुरु' : 'लघु';
+          const actualLabel = d.actual === 'S' ? 'गुरु' : 'लघु';
+
           html += `
-            <div class="correction-item mb-2 p-3" style="background: var(--color-white); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
-              <div class="flex justify-between items-center mb-2">
-                <span class="font-devanagari font-bold">${c.syllable}</span>
-                <span class="badge ${c.expected === 'S' ? 'badge-danger' : 'badge-success'}">${c.expected === 'S' ? 'गुरु चाहिन्छ' : 'लघु चाहिन्छ'}</span>
+            <div class="deviation-item mb-2 p-3" style="background: var(--color-white); border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+              <div class="flex justify-between items-center">
+                <span class="font-devanagari font-bold text-lg">${d.syllable}</span>
+                <span class="badge ${d.expected === 'S' ? 'badge-danger' : 'badge-success'}">${d.expected === 'S' ? 'गुरु चाहिन्छ' : 'लघु चाहिन्छ'}</span>
               </div>
-              <div class="text-sm">
-                <strong>सुझाव:</strong> <span class="font-devanagari">${c.suggestion}</span>
-                <span class="text-muted ml-2">${c.reason}</span>
-              </div>
+              <div class="text-sm text-muted mt-1">${d.reason}</div>
             </div>
           `;
         });
