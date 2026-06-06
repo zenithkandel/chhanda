@@ -6,6 +6,7 @@
 const ChhandaMatcher = (() => {
   /**
    * Matches a SISI pattern against all known chhandas
+   * Uses all lines for matching, not just one
    * @param {string} sisi - Generated SISI code from input
    * @param {number} syllablesPerPada - Detected syllables per line
    * @returns {Array<{chhandaId: string, confidence: number, matchedPadas: number, totalPadas: number, details: Object}>}
@@ -37,6 +38,77 @@ const ChhandaMatcher = (() => {
 
     // Sort by confidence (highest first)
     results.sort((a, b) => b.confidence - a.confidence);
+
+    return results;
+  }
+
+  /**
+   * Matches a multi-line poem against all known chhandas
+   * Tries each line and returns the best overall match
+   * @param {Array<{sisi: string, syllableCount: number}>} lineResults
+   * @returns {Array<{chhandaId: string, confidence: number, ...}>}
+   */
+  function matchPoemLines(lineResults) {
+    const chhandas = ChhandasData.getAll();
+    const results = [];
+
+    // Group lines by syllable count
+    const byCount = {};
+    lineResults.forEach(lr => {
+      const count = lr.syllableCount;
+      if (!byCount[count]) byCount[count] = [];
+      byCount[count].push(lr.sisi);
+    });
+
+    for (const chhanda of chhandas) {
+      const pattern = ChhandasData.getSISIPattern(chhanda.id);
+      if (!pattern) continue;
+
+      const linesForCount = byCount[pattern.perPada];
+      if (!linesForCount || linesForCount.length === 0) continue;
+
+      // Try each line's SISI and pick the best match
+      let bestConfidence = 0;
+      let bestResult = null;
+
+      for (const sisi of linesForCount) {
+        const matchResult = matchSpecific(sisi, chhanda.id);
+        if (matchResult.confidence > bestConfidence) {
+          bestConfidence = matchResult.confidence;
+          bestResult = matchResult;
+        }
+      }
+
+      if (bestResult && bestConfidence > 0) {
+        // Calculate how many lines match overall
+        let matchingLines = 0;
+        let totalDeviations = 0;
+        for (const sisi of linesForCount) {
+          const r = matchSpecific(sisi, chhanda.id);
+          if (r.deviations.length === 0) matchingLines++;
+          totalDeviations += r.deviations.length;
+        }
+
+        results.push({
+          chhandaId: chhanda.id,
+          chhandaName: chhanda.name,
+          confidence: bestConfidence,
+          matchedPadas: bestResult.matchedPadas,
+          totalPadas: bestResult.totalPadas,
+          deviations: bestResult.deviations,
+          matchingLines,
+          totalLines: linesForCount.length,
+          totalDeviations,
+          details: bestResult,
+        });
+      }
+    }
+
+    // Sort by: most matching lines first, then by confidence
+    results.sort((a, b) => {
+      if (a.matchingLines !== b.matchingLines) return b.matchingLines - a.matchingLines;
+      return b.confidence - a.confidence;
+    });
 
     return results;
   }
@@ -311,6 +383,7 @@ const ChhandaMatcher = (() => {
 
   return {
     matchChhanda,
+    matchPoemLines,
     matchSpecific,
     calculateSimilarity,
     findClosestMatch,

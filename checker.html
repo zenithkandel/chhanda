@@ -242,15 +242,8 @@
         syllableCount: l.syllables.length,
       }));
 
-      // Match chhandas
-      let bestMatches = [];
-      const syllableCounts = [...new Set(lineResults.map(l => l.syllableCount))];
-
-      syllableCounts.forEach(count => {
-        const sisi = lineResults.find(l => l.syllableCount === count)?.sisi || '';
-        const matches = ChhandaMatcher.matchChhanda(sisi, count);
-        bestMatches.push(...matches);
-      });
+      // Match chhandas - use all lines for best match
+      let bestMatches = ChhandaMatcher.matchPoemLines(lineResults);
 
       // Remove duplicates and sort
       bestMatches = [...new Map(bestMatches.map(m => [m.chhandaId, m])).values()];
@@ -330,6 +323,11 @@
         const borderStyle = isTarget ? 'border: 2px solid var(--color-primary);' : '';
         const bgColor = isTarget ? 'background: var(--color-primary-50);' : '';
 
+        // Show matching lines info if available
+        const matchInfo = match.matchingLines !== undefined
+          ? `${match.matchingLines}/${match.totalLines} पंक्ति मिल्छ`
+          : `${Math.round(match.confidence)}% मिलान`;
+
         html += `
           <div class="match-item p-4 mb-3" style="border-radius: var(--radius-md); ${borderStyle} ${bgColor}">
             <div class="flex justify-between items-center">
@@ -338,7 +336,7 @@
                 <span class="text-muted ml-2">${ch.name.en}</span>
               </div>
               <span class="badge ${match.confidence >= 80 ? 'badge-success' : match.confidence >= 50 ? 'badge-warning' : 'badge-danger'}">
-                ${Math.round(match.confidence)}% मिलान
+                ${matchInfo}
               </span>
             </div>
             <div class="text-sm text-muted mt-2">

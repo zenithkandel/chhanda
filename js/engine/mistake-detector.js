@@ -77,7 +77,16 @@ const MistakeDetector = (() => {
       return `अक्षर "${syllable.text}" मा गुरु चाहिन्छ (${syllable.reason || 'लघु छ'})`;
     } else {
       // Expected Laghu but found Guru
-      return `अक्षर "${syllable.text}" मा लघु चाहिन्छ (${syllable.reason || 'गुरु छ'})`;
+      // Explain why the syllable is Guru
+      const reasonMap = {
+        'long_vowel': 'दीर्घ स्वर भएकाले गुरु छ',
+        'anusvara': 'अनुस्वार भएकाले गुरु छ',
+        'visarga': 'विसर्ग भएकाले गुरु छ',
+        'closed_syllable_halant': 'हलन्त भएकाले गुरु छ',
+        'conjunct_consonant': 'संयुक्ताक्षर भएकाले गुरु छ',
+      };
+      const detail = reasonMap[syllable.reason] || syllable.reason || 'गुरु छ';
+      return `अक्षर "${syllable.text}" मा लघु चाहिन्छ (${detail})`;
     }
   }
 
@@ -116,7 +125,9 @@ const MistakeDetector = (() => {
       total: mistakes.length,
       byLine,
       byType,
-      summary: `Found ${mistakes.length} deviation(s): ${byType.guru_needed} need Guru, ${byType.laghu_needed} need Laghu`,
+      summary: mistakes.length === 0
+        ? 'कविता छन्द अनुसार छ!'
+        : `${mistakes.length} स्थानमा भिन्नता: ${byType.guru_needed} मा गुरु चाहिन्छ, ${byType.laghu_needed} मा लघु चाहिन्छ`,
     };
   }
 
